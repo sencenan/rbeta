@@ -1,0 +1,52 @@
+{
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "aggregate",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "seq",
+			"AttributeType": "N"
+		},
+		{
+			"AttributeName": "timestamp",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "aggregate",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "seq",
+			"KeyType": "RANGE"
+		}
+	],
+	"LocalSecondaryIndexes": [
+		{
+			"IndexName": "eventsByTimestamp",
+			"Projection": {
+				"ProjectionType": "ALL"
+			},
+			"KeySchema": [
+				{
+					"AttributeName": "aggregate",
+					"KeyType": "HASH"
+				},
+				{
+					"AttributeName": "timestamp",
+					"KeyType": "RANGE"
+				}
+			]
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 1,
+		"WriteCapacityUnits": 1
+	},
+	"StreamSpecification": {
+		"StreamEnabled": true,
+		"StreamViewType": "NEW_IMAGE"
+	}
+}

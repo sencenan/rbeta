@@ -1,0 +1,23 @@
+{
+  "name": "rbeta-node",
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=4.3.2"
+  },
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --recursive ./test",
+    "cover": "./node_modules/.bin/istanbul cover _mocha -- --recursive ./test"
+  },
+  "author": "LikeMindNetworks Inc.",
+  "dependencies": {
+    "joi": "^10.2.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.10.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "local-dynamo": "^0.4.1",
+    "mocha": "^3.0.0"
+  }
+}
