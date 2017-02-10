@@ -1,13 +1,14 @@
 'use strict';
 
-module.exports = function(opts) {
-	const rbeta = {
-		AWS: opts.AWS,
-		namespace: opts.namespace,
-		ns: opts.namespace
+const schema = require('./src/schema');
+
+module.exports = function(config) {
+
+	schema.validate(config.AWS, schema.AWSSDK);
+	schema.validate(config.namespace, schema.Namespace);
+
+	return {
+		tableName: require('./src/table-name')(config),
+		emit: require('./src/emit')(config)
 	};
-
-	rbeta.emit = require('./src/emit.js').bind(rbeta);
-
-	return rbeta;
 };
