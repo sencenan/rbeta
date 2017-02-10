@@ -9,6 +9,7 @@ module.exports = function(config) {
 
 	return {
 		tableName: require('./src/table-name')(config),
-		emit: require('./src/emit')(config)
+		emit: require('./src/emit')(config),
+		events: require('./src/events')(config)
 	};
 };

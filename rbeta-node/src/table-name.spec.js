@@ -1,8 +1,8 @@
 'use strict';
 
-describe('Test table name generation', function() {
+describe('table-name', function() {
 
-	it('module creation', () => {
+	it('validates module creation', () => {
 		assert.throws(
 			() => require('./table-name')(),
 			/Cannot read property \'namespace\'/
@@ -16,7 +16,7 @@ describe('Test table name generation', function() {
 		require('./table-name')({ namespace: 'app' });
 	});
 
-	it('table name from group name', () => {
+	it('get table name from group name', () => {
 		const tName = require('./table-name')({ namespace: 'app' });
 
 		assert.throws(
@@ -29,10 +29,15 @@ describe('Test table name generation', function() {
 			/"group" length must be at least 3 characters long/
 		);
 
+		assert.throws(
+			() => tName.fromGroup('ab '),
+			/"group" length must be at least 3 characters long/
+		);
+
 		assert.equal(tName.fromGroup('abc'), 'rbeta_app_ddb_abc');
 	});
 
-	it('table name from event', () => {
+	it('get table name from event', () => {
 		const tName = require('./table-name')({ namespace: 'app' });
 
 		assert.throws(
@@ -50,7 +55,8 @@ describe('Test table name generation', function() {
 			/"group" length must be at least 3 characters long/
 		);
 
-		assert.equal(tName.fromEvent({ group: 'abc' }), 'rbeta_app_ddb_abc');
+		// trimmed
+		assert.equal(tName.fromEvent({ group: '  abc ' }), 'rbeta_app_ddb_abc');
 	});
 
 });

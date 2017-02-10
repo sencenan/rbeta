@@ -1,9 +1,9 @@
 'use strict';
 
-describe('Test emit', function() {
+describe('emit', function() {
 	this.slow(150);
 
-	it('test validating event object', function() {
+	it('validates event object', function() {
 		assert.throws(
 			() => rbeta.emit({}),
 			/"group" is required/
@@ -59,6 +59,13 @@ describe('Test emit', function() {
 		);
 
 		assert.throws(
+			() => rbeta.emit(
+				{ group: '123', aggregate: '1', type: '1', seq: 1.2 }
+			),
+			/"seq" must be an integer/
+		);
+
+		assert.throws(
 			() => rbeta.emit({ group: '123', seq: 0, aggregate: '1' }),
 			/"type" is required/
 		);
@@ -91,7 +98,7 @@ describe('Test emit', function() {
 		);
 	});
 
-	it('test creating group if does not exist', function(done) {
+	it('creates group if does not exist', function(done) {
 		const ddb = new AWS.DynamoDB();
 
 		ddb.describeTable(
@@ -126,7 +133,7 @@ describe('Test emit', function() {
 		);
 	});
 
-	it('test not allow emitting event of duplicated event', function(done) {
+	it('does not allow emitting event of duplicated event', function(done) {
 		rbeta
 			.emit({
 				group: 'group1',

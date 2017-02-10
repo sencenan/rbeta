@@ -8,15 +8,20 @@ exports.AWSSDK = joi.object().unknown(true).keys({
 	}).required()
 }).required();
 
-exports.Namespace = joi.string().label('namespace').min(1).required();
+exports.Namespace = joi.string().label('namespace').trim().min(1).required();
 
-exports.GroupName = joi.string().label('group').min(3).required();
+exports.GroupName = joi.string().label('group').trim().min(3).required();
+
+exports.Aggregate = joi.string().label('aggregate').trim().min(1).required();
+
+exports.SequenceNumber = joi.number().integer()
+	.label('seq').integer().greater(-1).required(),
 
 exports.NewEvent = joi.object().keys({
 	group: exports.GroupName,
-	aggregate: joi.string().label('aggregate').min(1).required(),
-	seq: joi.number().label('seq').integer().greater(-1).required(),
-	type: joi.string().label('type').min(1).required(),
+	aggregate: exports.Aggregate,
+	seq: exports.SequenceNumber,
+	type: joi.string().label('type').trim().min(1).required(),
 	data: joi.object().label('data').default({}).unknown(true)
 }).required();
 
@@ -28,9 +33,9 @@ exports.validate = function(val, schema, opts) {
 		(err, val) => {
 			if (err) {
 				throw err;
+			} else {
+				return val;
 			}
-
-			return val;
 		}
 	);
 };
