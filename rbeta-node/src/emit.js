@@ -18,7 +18,7 @@ module.exports = function(config) {
 				ConditionExpression: 'attribute_not_exists(#s)',
 				ExpressionAttributeNames: { '#s': 'seq' }
 			},
-			(err, data) => err ? reject(err) : resolve(data)
+			(err, data) => err ? reject(err) : resolve(event)
 		);
 	});
 
