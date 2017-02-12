@@ -4,22 +4,8 @@ const bluebird = require('bluebird');
 
 describe('events', function() {
 
-	it('validates paramters', function() {
-		assert.throws(
-			() => rbeta.events().next(),
-			/"group" is required/
-		);
-
-		assert.throws(
-			() => rbeta.events('group').next(),
-			/"aggregate" is required/
-		);
-
-		rbeta.events('group', 'a').next();
-		rbeta.events('group', 'a', 4).next();
-	});
-
-	it('dummy test', function(done) {
+	before(function(done) {
+		// create table with data
 		rbeta
 			.emit({
 				group: 'eventsTest',
@@ -40,9 +26,37 @@ describe('events', function() {
 					}
 				})
 			))
-			.then(function(data) {
-				done();
-			}).catch(done);
+			.then(() => done()).catch(done);
+	});
+
+	it('validates paramters', function() {
+		assert.throws(
+			() => rbeta.events(),
+			/"group" is required/
+		);
+
+		assert.throws(
+			() => rbeta.events('group'),
+			/"aggregate" is required/
+		);
+
+		rbeta.events('group', 'a');
+		rbeta.events('group', 'a', 4);
+	});
+
+	it('fetch events without paging', function(done) {
+		rbeta
+			.events('eventsTest', 'a')
+			.then(
+				(it) => {
+					let i = 0;
+
+					for (let item of it) {
+						assert.equal(item.data.value, i++);
+					}
+				}
+			)
+			.then(() => done()).catch(done);
 	});
 
 });

@@ -9,7 +9,7 @@ module.exports = function(config) {
 		AWS = schema.validate(config.AWS, schema.AWSSDK);
 
 	const makeParam = (group, aggregate, fromSeq, exclusiveStartKey) => {
-		let param = {
+		const param = {
 			TableName: tName.fromGroup(group),
 			Select: 'ALL_ATTRIBUTES',
 			KeyConditionExpression: '#a = :a AND #s >= :s',
@@ -31,35 +31,28 @@ module.exports = function(config) {
 		return param;
 	};
 
-	return function*(group, aggregate, fromSeq) {
+	return function(group, aggregate, fromSeq) {
 		group = schema.validate(group, schema.GroupName);
 		aggregate = schema.validate(aggregate, schema.Aggregate);
+		fromSeq = schema.validate(fromSeq || 0, schema.SequenceNumber);
 
-		if (arguments.length <= 2) {
-			fromSeq = 0;
-		}
-		fromSeq = schema.validate(fromSeq, schema.SequenceNumber);
+		const ddoc = new AWS.DynamoDB.DocumentClient();
 
-		// return a data structure that supplies data as requested
-		// in 4.3.2+ mode, so genertors!
-		// const
-		// 	ddoc = new AWS.DynamoDB.DocumentClient(),
-		// 	respHandler = (err, data) => {
-		// 		if (err) {
-		// 			return reject(err);
-		// 		}
+		return new Promise(function(resolve, reject) {
+			const handler = function(err, data) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(
+						function*() {
+							yield* data.Items;
+						}()
+					);
+				}
+			};
 
-		// 		data.Items.map(item => { yield item; });
-
-		// 		if (data.LastEvaluatedKey) { // has more!
-		// 			ddoc.query(
-		// 				makeParam(group, aggregate, fromSeq, data.LastEvaluatedKey),
-		// 				respHandler
-		// 			);
-		// 		}
-		// 	};
-
-		// ddoc.query(params, makeParam(group, aggregate, fromSeq));
+			ddoc.query(makeParam(group, aggregate, fromSeq), handler);
+		});
 	};
 
 };
