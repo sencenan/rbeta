@@ -10,7 +10,7 @@ module.exports = function(config) {
 		tName = require('./table-name')(config),
 		AWS = schema.validate(config.AWS, schema.AWSSDK);
 
-	const storeEvent = (event) => new Promise((resolve, reject) => {
+	const storeEvent = event => new Promise((resolve, reject) => {
 		new AWS.DynamoDB.DocumentClient().put(
 			{
 				TableName: tName.fromEvent(event),
@@ -22,7 +22,7 @@ module.exports = function(config) {
 		);
 	});
 
-	const createTableForEvent = (event) => {
+	const createTableForEvent = event => {
 		const
 			ddb = new AWS.DynamoDB(),
 			tableName = tName.fromEvent(event);
@@ -30,14 +30,12 @@ module.exports = function(config) {
 		return new Promise((resolve, reject) => ddb.createTable(
 			Object.assign({ TableName: tableName }, CREATE_TABLE_PARAMS),
 			(err, data) =>
-				/* istanbul ignore next */
-				err ? reject(err) : resolve(data)
+				err ? /* istanbul ignore next */ reject(err) : resolve(data)
 		)).then(() => new Promise((resolve, reject) => ddb.waitFor(
 			'tableExists',
 			{ TableName: tableName },
 			(err, data) =>
-				/* istanbul ignore next */
-				err ? reject(err) : resolve(data)
+				err ? /* istanbul ignore next */ reject(err) : resolve(data)
 		)));
 	};
 
