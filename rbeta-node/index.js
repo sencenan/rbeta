@@ -1,6 +1,6 @@
 'use strict';
 
-const schema = require('./src/schema');
+const schema = require('./src/lib/schema');
 
 module.exports = function(config) {
 
@@ -8,9 +8,9 @@ module.exports = function(config) {
 	schema.validate(config.namespace, schema.Namespace);
 
 	return {
-		tableName: require('./src/table-name')(config),
-		emit: require('./src/emit')(config),
-		events: require('./src/events')(config),
-		lastEvent: require('./src/last-event')(config)
+		tableName: require('./src/lib/table-name')(config),
+		emit: require('./src/lib/emit')(config),
+		events: require('./src/lib/events')(config),
+		lastEvent: require('./src/lib/last-event')(config)
 	};
 };
