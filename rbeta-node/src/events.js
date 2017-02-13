@@ -37,21 +37,30 @@ module.exports = function(config) {
 		fromSeq = schema.validate(fromSeq || 0, schema.SequenceNumber);
 
 		const ddoc = new AWS.DynamoDB.DocumentClient();
+		let items = [];
 
-		return new Promise(function(resolve, reject) {
-			const handler = function(err, data) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(
-						function*() {
-							yield* data.Items;
-						}()
-					);
+		return new Promise((resolve, reject) => {
+			ddoc.query(
+				makeParam(group, aggregate, fromSeq),
+				function handler(err, data) {
+					if (err) {
+						reject(err);
+					} else {
+						items = items.concat(data.Items);
+
+						if (data.LastEvaluatedKey) {
+							ddoc.query(
+								makeParam(
+									group, aggregate, fromSeq, data.LastEvaluatedKey
+								),
+								handler
+							);
+						} else {
+							resolve(items);
+						}
+					}
 				}
-			};
-
-			ddoc.query(makeParam(group, aggregate, fromSeq), handler);
+			);
 		});
 	};
 

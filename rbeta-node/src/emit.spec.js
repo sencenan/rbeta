@@ -99,16 +99,18 @@ describe('emit', function() {
 	});
 
 	it('creates group if does not exist', function(done) {
+		this.slow(2000); // slow because it waits for table creation
+
 		const ddb = new AWS.DynamoDB();
 
 		ddb.describeTable(
-			{ TableName: rbeta.tableName.fromGroup('123') },
+			{ TableName: rbeta.tableName.fromGroup('emitTest') },
 			(err, data) => {
 				assert.equal(err.code, 'ResourceNotFoundException');
 
 				rbeta
 					.emit({
-						group: '123',
+						group: 'emitTest',
 						aggregate: '1',
 						type: '1',
 						seq: 0,
@@ -116,7 +118,7 @@ describe('emit', function() {
 					})
 					.then((data) => {
 						ddb.describeTable(
-							{ TableName: rbeta.tableName.fromGroup('123') },
+							{ TableName: rbeta.tableName.fromGroup('emitTest') },
 							(err, data) => {
 								assert(data.Table.StreamSpecification.StreamEnabled);
 								assert.equal(
@@ -136,15 +138,15 @@ describe('emit', function() {
 	it('does not allow emitting event of duplicated event', function(done) {
 		rbeta
 			.emit({
-				group: 'group1',
-				aggregate: '1',
+				group: 'emitTest',
+				aggregate: 'test1',
 				type: '1',
 				seq: 0
 			})
 			.then(
 				() => rbeta.emit({
-					group: 'group1',
-					aggregate: '1',
+					group: 'emitTest',
+					aggregate: 'test1',
 					type: '2',
 					seq: 0
 				})
@@ -159,15 +161,15 @@ describe('emit', function() {
 	it('test emitting events', function(done) {
 		rbeta
 			.emit({
-				group: 'group2',
-				aggregate: '1',
+				group: 'emitTest',
+				aggregate: 'test2',
 				type: '1',
 				seq: 0
 			})
 			.then(
 				() => rbeta.emit({
-					group: 'group2',
-					aggregate: '1',
+					group: 'emitTest',
+					aggregate: 'test2',
 					type: '2',
 					seq: 1
 				})
