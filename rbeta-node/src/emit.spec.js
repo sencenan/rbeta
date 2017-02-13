@@ -151,7 +151,6 @@ describe('emit', function() {
 					seq: 0
 				})
 			)
-			.then(() => done(new Error('error exepected')))
 			.catch((err) => {
 				assert.equal(err.code, 'ConditionalCheckFailedException');
 				done();

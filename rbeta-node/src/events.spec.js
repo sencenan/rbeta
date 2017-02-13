@@ -73,4 +73,17 @@ describe('events', function() {
 			.then(() => done()).catch(done);
 	});
 
+	it('fetch empty aggregate', function(done) {
+		this.slow(500); // slow because data item is large
+
+		rbeta
+			.events('eventsTest', 'empty')
+			.then((items) => assert.deepEqual(items, []))
+			.then(() => done()).catch(done);
+	});
+
+	it('fetch from nonexistent group', function(done) {
+		rbeta.events('non', 'a').catch(() => done());
+	});
+
 });

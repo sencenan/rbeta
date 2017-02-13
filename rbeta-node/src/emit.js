@@ -29,11 +29,15 @@ module.exports = function(config) {
 
 		return new Promise((resolve, reject) => ddb.createTable(
 			Object.assign({ TableName: tableName }, CREATE_TABLE_PARAMS),
-			(err, data) => err ? reject(err) : resolve(data)
+			(err, data) =>
+				/* istanbul ignore next */
+				err ? reject(err) : resolve(data)
 		)).then(() => new Promise((resolve, reject) => ddb.waitFor(
 			'tableExists',
 			{ TableName: tableName },
-			(err, data) => err ? reject(err) : resolve(data)
+			(err, data) =>
+				/* istanbul ignore next */
+				err ? reject(err) : resolve(data)
 		)));
 	};
 
