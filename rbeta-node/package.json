@@ -12,7 +12,10 @@
   },
   "author": "LikeMindNetworks Inc.",
   "dependencies": {
-    "joi": "^10.2.1"
+    "joi": "^10.2.1",
+    "tmp": "0.0.31",
+    "webpack": "^2.2.1",
+    "yargs": "^6.6.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.10.0",
