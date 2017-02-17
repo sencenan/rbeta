@@ -16,6 +16,9 @@ module.exports = function(opts) {
 			'global.reducer = require("'
 				+ path.resolve(opts.output, opts.name)
 				+ '").reducer;'
+				+ 'global.schema = require("'
+				+ path.resolve(__dirname, '../lib/schema')
+				+ '");'
 		);
 
 		resolve(childProc.execFileSync(

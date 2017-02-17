@@ -11,6 +11,8 @@ module.exports = function(config) {
 		tableName: require('./src/lib/table-name')(config),
 		emit: require('./src/lib/emit')(config),
 		events: require('./src/lib/events')(config),
-		lastEvent: require('./src/lib/last-event')(config)
+		lastEvent: require('./src/lib/last-event')(config),
+		lastReducedEvent: require('./src/lib/last-reduced-event')(config),
+		track: require('./src/lib/track')(config)
 	};
 };

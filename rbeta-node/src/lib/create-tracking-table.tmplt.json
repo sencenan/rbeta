@@ -5,7 +5,7 @@
 			"AttributeType": "S"
 		},
 		{
-			"AttributeName": "reducer",
+			"AttributeName": "reducerName",
 			"AttributeType": "S"
 		}
 	],
@@ -15,7 +15,7 @@
 			"KeyType": "HASH"
 		},
 		{
-			"AttributeName": "reducer",
+			"AttributeName": "reducerName",
 			"KeyType": "RANGE"
 		}
 	],

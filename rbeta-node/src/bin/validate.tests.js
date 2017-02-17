@@ -9,6 +9,10 @@ describe('Validating reducer', function() {
 		assert.equal(typeof reducer, 'object');
 	});
 
+	it('name', function() {
+		schema.ReducerName.check(reducer.name);
+	});
+
 	it('pump()', function() {
 		assert(reducer.pump);
 		assert.equal(typeof reducer.pump, 'function');

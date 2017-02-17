@@ -2,6 +2,8 @@
 
 const rbeta = require('rbeta-node');
 
+exports.name = 'example-reducer';
+
 exports.pump = () => {};
 exports.state = () => {};
 

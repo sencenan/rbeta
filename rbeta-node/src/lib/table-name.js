@@ -4,14 +4,14 @@ const schema = require('./schema');
 
 module.exports = function(config) {
 
-	schema.validate(config.namespace, schema.Namespace);
+	schema.Namespace.check(config.namespace);
 
 	const fromGroup = function(group) {
 		return [
 			'rbeta',
 			config.namespace,
 			'ddb',
-			schema.validate(group, schema.GroupName)
+			schema.GroupName.check(group)
 		].join('_');
 	};
 

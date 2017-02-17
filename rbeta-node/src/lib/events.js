@@ -6,7 +6,7 @@ module.exports = function(config) {
 
 	const
 		tName = require('./table-name')(config),
-		AWS = schema.validate(config.AWS, schema.AWSSDK);
+		AWS = schema.AWSSDK.check(config.AWS);
 
 	const makeParam = (group, aggregate, fromSeq, exclusiveStartKey) => {
 		const param = {
@@ -32,36 +32,34 @@ module.exports = function(config) {
 	};
 
 	return function(group, aggregate, fromSeq) {
-		group = schema.validate(group, schema.GroupName);
-		aggregate = schema.validate(aggregate, schema.Aggregate);
-		fromSeq = schema.validate(fromSeq || 0, schema.SequenceNumber);
+		group = schema.GroupName.check(group);
+		aggregate = schema.Aggregate.check(aggregate);
+		fromSeq = schema.SequenceNumber.check(fromSeq || 0);
 
 		const ddoc = new AWS.DynamoDB.DocumentClient();
 		let items = [];
 
-		return new Promise((resolve, reject) => {
-			ddoc.query(
-				makeParam(group, aggregate, fromSeq),
-				function handler(err, data) {
-					if (err) {
-						reject(err);
-					} else {
-						items = items.concat(data.Items);
+		return new Promise((resolve, reject) => ddoc.query(
+			makeParam(group, aggregate, fromSeq),
+			function handler(err, data) {
+				if (err) {
+					reject(err);
+				} else {
+					items = items.concat(data.Items);
 
-						if (data.LastEvaluatedKey) {
-							ddoc.query(
-								makeParam(
-									group, aggregate, fromSeq, data.LastEvaluatedKey
-								),
-								handler
-							);
-						} else {
-							resolve(items);
-						}
+					if (data.LastEvaluatedKey) {
+						ddoc.query(
+							makeParam(
+								group, aggregate, fromSeq, data.LastEvaluatedKey
+							),
+							handler
+						);
+					} else {
+						resolve(items);
 					}
 				}
-			);
-		});
+			}
+		));
 	};
 
 };

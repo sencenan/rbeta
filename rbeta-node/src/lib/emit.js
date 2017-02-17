@@ -10,9 +10,11 @@ module.exports = function(config) {
 
 	const
 		tName = require('./table-name')(config),
-		AWS = schema.validate(config.AWS, schema.AWSSDK);
+		AWS = schema.AWSSDK.check(config.AWS);
 
 	const storeEvent = event => new Promise((resolve, reject) => {
+		event.timestamp = new Date().toISOString();
+
 		new AWS.DynamoDB.DocumentClient().put(
 			{
 				TableName: tName.fromEvent(event),
@@ -59,7 +61,7 @@ module.exports = function(config) {
 	};
 
 	return function(event) {
-		event = schema.validate(event, schema.NewEvent);
+		event = schema.NewEvent.check(event);
 
 		return storeEvent(event).catch((err) => {
 			if (err.code === 'ResourceNotFoundException') {

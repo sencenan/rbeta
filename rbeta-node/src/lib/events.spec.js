@@ -12,7 +12,7 @@ describe('events', function() {
 				aggregate: 'a',
 				type: 'update',
 				seq: 0,
-				data: { value: 0, filler: new Buffer(1024 * 256) }
+				data: { value: 0, filler: new Buffer(1024 * 128) }
 			})
 			.then(() => bluebird.map(
 				[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -23,7 +23,7 @@ describe('events', function() {
 					seq: v,
 					data: {
 						value: v,
-						filler: new Buffer(1024 * 256)
+						filler: new Buffer(1024 * 128)
 					}
 				})
 			))
