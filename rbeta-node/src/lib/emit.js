@@ -2,7 +2,9 @@
 
 const schema = require('./schema');
 
-const CREATE_TABLE_PARAMS = require('./create-table.tmplt.json');
+const
+	CREATE_TABLE_PARAMS = require('./create-table.tmplt.json'),
+	CREATE_TRACKING_TABLE_PARAMS = require('./create-tracking-table.tmplt.json');
 
 module.exports = function(config) {
 
@@ -39,12 +41,31 @@ module.exports = function(config) {
 		)));
 	};
 
+	const createShadowTableForEvent = event => {
+		const
+			ddb = new AWS.DynamoDB(),
+			tableName = tName.trackingName(tName.fromEvent(event));
+
+		return new Promise((resolve, reject) => ddb.createTable(
+			Object.assign({ TableName: tableName }, CREATE_TRACKING_TABLE_PARAMS),
+			(err, data) =>
+				err ? /* istanbul ignore next */ reject(err) : resolve(data)
+		)).then(() => new Promise((resolve, reject) => ddb.waitFor(
+			'tableExists',
+			{ TableName: tableName },
+			(err, data) =>
+				err ? /* istanbul ignore next */ reject(err) : resolve(data)
+		)));
+	};
+
 	return function(event) {
 		event = schema.validate(event, schema.NewEvent);
 
 		return storeEvent(event).catch((err) => {
 			if (err.code === 'ResourceNotFoundException') {
-				return createTableForEvent(event).then(() => storeEvent(event));
+				return createTableForEvent(event)
+					.then(() => createShadowTableForEvent(event))
+					.then(() => storeEvent(event));
 			} else {
 				throw err;
 			}

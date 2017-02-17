@@ -1,27 +1,32 @@
 'use strict';
 
-const path = require('path');
+const
+	path = require('path'),
+	fs = require('fs'),
+	tmp = require('tmp'),
+	childProc = require('child_process');
 
 module.exports = function(opts) {
 	return new Promise((resolve, reject) => {
-		const reducer = require(path.resolve(opts.output, opts.name));
-		console.log(reducer);
+		// write shim test setup file
+		const testSetupShim = tmp.fileSync().name;
 
-		/**
-		 * Testing invariants
-		 *
-		 * - pump::S -> IO(S)
-		 * 0) not tested, causes IO
-		 *
-		 * - state::a -> S
-		 * 0) not tested, no data.
-		 *
-		 * - reduce::S -> E -> S
-		 * 0) mock pump and state function implementation supplied
-		 * 1) Be able to handle gaps in events:
-		 * 	state at S[n-i], E is at E[n], i > 0, still produce S[n]
-		 * 2) Be able to handle old events:
-		 * 	State at S[n], E is at E[n-i], i >=0 , still produce S[n]
-		 */
+		fs.writeFileSync(
+			testSetupShim,
+			'global.reducer = require("'
+				+ path.resolve(opts.output, opts.name)
+				+ '").reducer;'
+		);
+
+		resolve(childProc.execFileSync(
+			path.resolve(__dirname, '../../node_modules/.bin/mocha'),
+			[
+				'-r', testSetupShim,
+				path.resolve(__dirname, './validate.tests.js')
+			],
+			{
+				stdio: 'inherit'
+			}
+		));
 	});
 };

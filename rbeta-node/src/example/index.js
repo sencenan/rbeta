@@ -2,6 +2,8 @@
 
 const rbeta = require('rbeta-node');
 
-exports.state = () => {};
-exports.reduce = () => {};
 exports.pump = () => {};
+exports.state = () => {};
+
+exports.reduce = (state, event) => {
+};

@@ -59,4 +59,14 @@ describe('table-name', function() {
 		assert.equal(tName.fromEvent({ group: '  abc ' }), 'rbeta_app_ddb_abc');
 	});
 
+	it('get tracking table name from event', () => {
+		const tName = require('./table-name')({ namespace: 'app' });
+
+		assert.equal(
+			tName.trackingName(tName.fromEvent({ group: '  abc ' })),
+			'rbeta_app_ddb_abc_tracking'
+		);
+		assert.equal(tName.trackingName(' abc   '), 'abc_tracking');
+	});
+
 });

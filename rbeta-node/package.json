@@ -12,7 +12,9 @@
   },
   "author": "LikeMindNetworks Inc.",
   "dependencies": {
+    "cp-file": "^4.1.1",
     "joi": "^10.2.1",
+    "node-zip": "^1.1.1",
     "tmp": "0.0.31",
     "webpack": "^2.2.1",
     "yargs": "^6.6.0"

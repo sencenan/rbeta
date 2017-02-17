@@ -1,0 +1,26 @@
+{
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "aggregate",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "reducer",
+			"AttributeType": "S"
+		}
+	],
+	"KeySchema": [
+		{
+			"AttributeName": "aggregate",
+			"KeyType": "HASH"
+		},
+		{
+			"AttributeName": "reducer",
+			"KeyType": "RANGE"
+		}
+	],
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 1,
+		"WriteCapacityUnits": 1
+	}
+}

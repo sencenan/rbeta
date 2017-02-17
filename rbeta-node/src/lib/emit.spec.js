@@ -126,7 +126,18 @@ describe('emit', function() {
 									'NEW_IMAGE'
 								);
 
-								done(err);
+								// check that tracking table is created
+								ddb.describeTable(
+									{
+										TableName: rbeta.tableName.trackingName(
+											rbeta.tableName.fromGroup('emitTest')
+										)
+									},
+									(err, data) => {
+										assert(data);
+										done(err);
+									}
+								);
 							}
 						);
 					})

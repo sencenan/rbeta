@@ -19,9 +19,14 @@ module.exports = function(config) {
 		return fromGroup(event.group);
 	};
 
+	const trackingName = function(tableName) {
+		return tableName.trim() + '_tracking';
+	};
+
 	return {
 		fromEvent: fromEvent,
-		fromGroup: fromGroup
+		fromGroup: fromGroup,
+		trackingName: trackingName
 	};
 
 };
