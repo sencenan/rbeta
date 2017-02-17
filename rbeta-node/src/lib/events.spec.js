@@ -73,6 +73,22 @@ describe('events', function() {
 			.then(() => done()).catch(done);
 	});
 
+	it('fetch all events starting from N to M', function(done) {
+		this.slow(500); // slow because data item is large
+
+		let lo = 2, hi = 7;
+
+		rbeta
+			.events('eventsTest', 'a', 2, 7)
+			.then((items) => {
+				let i = lo;
+
+				items.map(item => assert.equal(item.data.value, i++));
+				assert.equal(i, hi + 1);
+			})
+			.then(() => done()).catch(done);
+	});
+
 	it('fetch empty aggregate', function(done) {
 		this.slow(500); // slow because data item is large
 

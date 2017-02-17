@@ -8,30 +8,33 @@ module.exports = function(config) {
 		tName = require('./table-name')(config),
 		AWS = schema.AWSSDK.check(config.AWS);
 
-	const makeParam = (group, aggregate, fromSeq, exclusiveStartKey) => {
+	const makeParam = (group, aggregate, fromSeq, toSeq, esk) => {
 		const param = {
 			TableName: tName.fromGroup(group),
 			Select: 'ALL_ATTRIBUTES',
-			KeyConditionExpression: '#a = :a AND #s >= :s',
-			ExpressionAttributeNames: {
-				'#a': 'aggregate',
-				'#s': 'seq'
-			},
-			ExpressionAttributeValues: {
-				':a': aggregate,
-				':s': fromSeq
-			},
+			KeyConditionExpression: '#a = :a',
+			ExpressionAttributeNames: { '#a': 'aggregate', '#s': 'seq' },
+			ExpressionAttributeValues: { ':a': aggregate },
 			ScanIndexForward: true
 		};
 
-		if (exclusiveStartKey) {
-			param.ExclusiveStartKey = exclusiveStartKey;
+		if (toSeq) {
+			param.KeyConditionExpression += ' AND (#s BETWEEN :lo AND :hi)';
+			param.ExpressionAttributeValues[':lo'] = fromSeq;
+			param.ExpressionAttributeValues[':hi'] = toSeq;
+		} else {
+			param.KeyConditionExpression += ' AND #s >= :s';
+			param.ExpressionAttributeValues[':s'] = fromSeq;
+		}
+
+		if (esk) {
+			param.ExclusiveStartKey = esk;
 		}
 
 		return param;
 	};
 
-	return function(group, aggregate, fromSeq) {
+	return function(group, aggregate, fromSeq, toSeq) {
 		group = schema.GroupName.check(group);
 		aggregate = schema.Aggregate.check(aggregate);
 		fromSeq = schema.SequenceNumber.check(fromSeq || 0);
@@ -40,7 +43,7 @@ module.exports = function(config) {
 		let items = [];
 
 		return new Promise((resolve, reject) => ddoc.query(
-			makeParam(group, aggregate, fromSeq),
+			makeParam(group, aggregate, fromSeq, toSeq),
 			function handler(err, data) {
 				if (err) {
 					reject(err);
@@ -50,7 +53,7 @@ module.exports = function(config) {
 					if (data.LastEvaluatedKey) {
 						ddoc.query(
 							makeParam(
-								group, aggregate, fromSeq, data.LastEvaluatedKey
+								group, aggregate, fromSeq, toSeq, data.LastEvaluatedKey
 							),
 							handler
 						);
