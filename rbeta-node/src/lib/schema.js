@@ -33,13 +33,12 @@ exports.NewEvent = joi.object().label('event').keys({
 
 exports.validate = function(val, schema, opts) {
 	return joi.validate(val, schema, opts || {}, (err, val) => {
-			if (err) {
-				throw err;
-			} else {
-				return val;
-			}
+		if (err) {
+			throw err;
+		} else {
+			return val;
 		}
-	);
+	});
 };
 
 [

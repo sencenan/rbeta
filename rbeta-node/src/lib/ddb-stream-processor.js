@@ -4,6 +4,8 @@ const reducer = require('./rbeta-reducer-bundle.js').reducer;
 
 // event { Records[{ dynamodb: { NewImage: {} } }] }
 exports.handler = (event, context, callback) => {
+	// init reducer
+	//
 	// iterate each event
 	// 	for each event
 	// 		group events by aggregate
