@@ -1,6 +1,8 @@
 'use strict';
 
-const reducer = require('./rbeta-reducer-bundle.js').reducer;
+const
+	rbeta = require('../../index'),
+	reducer = require('reducer');
 
 // event { Records[{ dynamodb: { NewImage: {} } }] }
 exports.handler = (event, context, callback) => {
@@ -21,4 +23,7 @@ exports.handler = (event, context, callback) => {
 	//
 	// error does not stop the entire process, try to process all events
 	// errors are however collected and pass to callback as failure
+
+	console.log(rbeta);
+	console.log(reducer);
 };

@@ -10,7 +10,7 @@ const renderConfig = function(entry, outputDir, outputFile) {
 	return {
 		target: 'node',
 
-		entry: entry,
+		entry: path.resolve(__dirname, '../lib/ddb-stream-processor.js'),
 
 		output: {
 			filename: outputFile,
@@ -21,7 +21,7 @@ const renderConfig = function(entry, outputDir, outputFile) {
 
 		resolve: {
 			alias: {
-				'rbeta-node$': path.resolve(__dirname, '../../index.js')
+				'reducer$': path.resolve(process.cwd(), entry)
 			}
 		}
 	};
@@ -36,7 +36,11 @@ module.exports = function(opts) {
 		renderConfig(opts.entry, opts.output, opts.name),
 		(err, stats) => {
 			if (err || stats.hasErrors()) {
-				reject(err || stats.hasErrors());
+				reject(
+					stats.hasErrors()
+						? stats.compilation.errors[0]
+						: err
+				);
 			} else {
 				resolve(stats);
 			}

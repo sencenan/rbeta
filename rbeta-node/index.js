@@ -7,6 +7,10 @@ module.exports = function(config) {
 	schema.validate(config.AWS, schema.AWSSDK);
 	schema.validate(config.namespace, schema.Namespace);
 
+	// TODO:
+	// AWS needs to be supplied by reducer
+	// NS needs to be supplied by rbeta
+
 	return {
 		tableName: require('./src/lib/table-name')(config),
 		emit: require('./src/lib/emit')(config),
