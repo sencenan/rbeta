@@ -13,6 +13,11 @@ describe('Validating reducer', function() {
 		schema.ReducerName.check(reducer.name);
 	});
 
+	it('aws()', function() {
+		assert(reducer.aws);
+		assert.equal(typeof reducer.aws, 'function');
+	});
+
 	it('pump()', function() {
 		assert(reducer.pump);
 		assert.equal(typeof reducer.pump, 'function');

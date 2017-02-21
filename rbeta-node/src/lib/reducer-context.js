@@ -4,10 +4,12 @@ const
 	rbeta = require('../../index'),
 	reducer = require('reducer');
 
+exports.rbeta = rbeta;
+exports.reducer = reducer;
+
 // event { Records[{ dynamodb: { NewImage: {} } }] }
 exports.handler = (event, context, callback) => {
 	// init reducer
-	//
 	// iterate each event
 	// 	for each event
 	// 		group events by aggregate
@@ -24,6 +26,10 @@ exports.handler = (event, context, callback) => {
 	// error does not stop the entire process, try to process all events
 	// errors are however collected and pass to callback as failure
 
-	console.log(rbeta);
+	const reducer = reducer(rbeta({
+		namespace: process.env.NS,
+		reducer: reducer
+	}));
+
 	console.log(reducer);
 };

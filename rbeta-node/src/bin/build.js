@@ -10,12 +10,11 @@ const renderConfig = function(entry, outputDir, outputFile) {
 	return {
 		target: 'node',
 
-		entry: path.resolve(__dirname, '../lib/ddb-stream-processor.js'),
+		entry: path.resolve(__dirname, '../lib/reducer-context.js'),
 
 		output: {
 			filename: outputFile,
 			path: outputDir,
-			library: 'reducer',
 			libraryTarget: 'this'
 		},
 

@@ -1,32 +1,30 @@
 'use strict';
 
-const schema = require('./schema');
+const
+	rbeta = require('./rbeta'),
+	schema = require('./schema');
 
-module.exports = function(config) {
+const fromGroup = function(group) {
+	console.log(rbeta);
 
-	schema.Namespace.check(config.namespace);
+	return [
+		'rbeta',
+		rbeta.config.namespace,
+		'ddb',
+		schema.GroupName.check(group)
+	].join('_');
+};
 
-	const fromGroup = function(group) {
-		return [
-			'rbeta',
-			config.namespace,
-			'ddb',
-			schema.GroupName.check(group)
-		].join('_');
-	};
+const fromEvent = function(event) {
+	return fromGroup(event.group);
+};
 
-	const fromEvent = function(event) {
-		return fromGroup(event.group);
-	};
+const trackingName = function(tableName) {
+	return tableName.trim() + '_tracking';
+};
 
-	const trackingName = function(tableName) {
-		return tableName.trim() + '_tracking';
-	};
-
-	return {
-		fromEvent: fromEvent,
-		fromGroup: fromGroup,
-		trackingName: trackingName
-	};
-
+module.exports = {
+	fromEvent: fromEvent,
+	fromGroup: fromGroup,
+	trackingName: trackingName
 };

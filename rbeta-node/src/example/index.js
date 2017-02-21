@@ -1,12 +1,11 @@
 'use strict';
 
-module.exports = function(rbeta) {
+const rbeta = require('rbeta-node');
 
-	return {
-		name: 'example-reducer',
-		pump: () => {},
-		state: () => {},
-		reduce: (state, event) => {}
-	};
-
+module.exports = {
+	name: 'example-reducer',
+	aws: () => {},
+	pump: () => {},
+	state: () => {},
+	reduce: (state, event) => {}
 };

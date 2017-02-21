@@ -13,9 +13,10 @@ module.exports = function(opts) {
 
 		fs.writeFileSync(
 			testSetupShim,
-			'global.reducer = require("'
+			'const reducerCtx = require("'
 				+ path.resolve(opts.output, opts.name)
-				+ '").reducer;'
+				+ '");'
+				+ 'global.reducer = reducerCtx.reducer(reducerCtx.rbeta);'
 				+ 'global.schema = require("'
 				+ path.resolve(__dirname, '../lib/schema')
 				+ '");'

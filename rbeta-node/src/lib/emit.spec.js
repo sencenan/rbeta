@@ -98,7 +98,7 @@ describe('emit', function() {
 		);
 	});
 
-	it('creates group if does not exist', function(done) {
+	it.only('creates group if does not exist', function(done) {
 		this.slow(2000); // slow because it waits for table creation
 
 		const ddb = new AWS.DynamoDB();
