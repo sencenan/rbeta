@@ -21,17 +21,17 @@ describe('table-name', function() {
 		);
 
 		assert.throws(
-			() => new TableName({ namespace: 'a', groupName: '' }),
+			() => new TableName({ namespace: 'a', group: '' }),
 			/"GroupName" is not allowed to be empty/
 		);
 
 		assert.throws(
-			() => new TableName({ namespace: 'a', groupName: 'ab' }),
+			() => new TableName({ namespace: 'a', group: 'ab' }),
 			/"GroupName" length must be at least 3 characters long/
 		);
 
 		assert.equal(
-			new TableName({ namespace: 'app', groupName: 'abc' }).toString(),
+			new TableName({ namespace: 'app', group: 'abc' }).toString(),
 			'rbeta_app_ddb_abc'
 		);
 	});
@@ -39,7 +39,7 @@ describe('table-name', function() {
 	it('get table name from event', () => {
 		assert.throws(
 			() => TableName.fromEvent('ns', {}),
-			/"groupName" is required/
+			/"group" is required/
 		);
 
 		assert.throws(

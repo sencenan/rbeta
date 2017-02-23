@@ -22,7 +22,7 @@ module.exports = class FetchLastReduction extends Command {
 		return {
 			TableName: new TableName({
 				namespace: ctx.namespace,
-				groupName: this.group
+				group: this.group
 			}).trackingName,
 			Select: 'ALL_ATTRIBUTES',
 			KeyConditionExpression: '#a = :a AND #s = :s',

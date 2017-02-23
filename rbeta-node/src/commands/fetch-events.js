@@ -22,7 +22,7 @@ module.exports = class FetchEvents extends Command {
 	makeParam(ctx, exclusiveStartKey) {
 		const param = {
 			TableName: new TableName({
-				namespace: ctx.namespace, groupName: this.group
+				namespace: ctx.namespace, group: this.group
 			}).toString(),
 			Select: 'ALL_ATTRIBUTES',
 			KeyConditionExpression: '#a = :a',

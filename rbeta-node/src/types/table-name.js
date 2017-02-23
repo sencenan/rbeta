@@ -10,14 +10,14 @@ module.exports = class TableName extends ST {
 	static fromEvent(namespace, event) {
 		return new TableName({
 			namespace: namespace,
-			groupName: event.group
+			group: event.group
 		});
 	}
 
 	static get schema() {
 		return ST.joi.object().keys({
 			namespace: ST.joi.st(Namespace).required(),
-			groupName: ST.joi.st(GroupName).required()
+			group: ST.joi.st(GroupName).required()
 		}).required().label('parameter');
 	}
 
@@ -26,7 +26,7 @@ module.exports = class TableName extends ST {
 	}
 
 	toString() {
-		return ['rbeta', this.namespace, 'ddb', this.groupName].join('_');
+		return ['rbeta', this.namespace, 'ddb', this.group].join('_');
 	}
 
 };

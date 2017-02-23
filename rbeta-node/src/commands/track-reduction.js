@@ -23,7 +23,7 @@ module.exports = class TrackEvent extends Command {
 			(resolve, reject) => new ctx.AWS.DynamoDB.DocumentClient().put(
 				{
 					TableName: new TableName({
-						namespace: ctx.namespace, groupName: this.group
+						namespace: ctx.namespace, group: this.group
 					}).trackingName,
 					Item: {
 						aggregate: this.event.aggregate,
