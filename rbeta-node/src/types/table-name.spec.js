@@ -1,64 +1,69 @@
 'use strict';
 
-describe('table-name', function() {
+const TableName = require('./table-name');
 
-	const
-		ns = 'app',
-		tName = require('./table-name');
+describe('table-name', function() {
 
 	it('get table name from group name', () => {
 		assert.throws(
-			() => tName.fromGroup(''),
-			/"namespace" is not allowed to be empty/
+			() => new TableName(),
+			/"parameter" is required/
 		);
 
 		assert.throws(
-			() => tName.fromGroup(ns, ''),
-			/"group" is not allowed to be empty/
+			() => new TableName({}),
+			/"namespace" is required/
 		);
 
 		assert.throws(
-			() => tName.fromGroup(ns, 'ab'),
-			/"group" length must be at least 3 characters long/
+			() => new TableName({ namespace: '' }),
+			/"Namespace" is not allowed to be empty/
 		);
 
 		assert.throws(
-			() => tName.fromGroup(ns, 'ab '),
-			/"group" length must be at least 3 characters long/
+			() => new TableName({ namespace: 'a', groupName: '' }),
+			/"GroupName" is not allowed to be empty/
 		);
 
-		assert.equal(tName.fromGroup(ns, 'abc'), 'rbeta_app_ddb_abc');
+		assert.throws(
+			() => new TableName({ namespace: 'a', groupName: 'ab' }),
+			/"GroupName" length must be at least 3 characters long/
+		);
+
+		assert.equal(
+			new TableName({ namespace: 'app', groupName: 'abc' }).toString(),
+			'rbeta_app_ddb_abc'
+		);
 	});
 
 	it('get table name from event', () => {
 		assert.throws(
-			() => tName.fromEvent(ns, {}),
-			/"group" is required/
+			() => TableName.fromEvent('ns', {}),
+			/"groupName" is required/
 		);
 
 		assert.throws(
-			() => tName.fromEvent(ns, { group: '' }),
-			/"group" is not allowed to be empty/
+			() => TableName.fromEvent('ns', { group: '' }),
+			/"GroupName" is not allowed to be empty/
 		);
 
 		assert.throws(
-			() => tName.fromEvent(ns, { group: 'ab' }),
-			/"group" length must be at least 3 characters long/
+			() => TableName.fromEvent('ns', { group: 'ab' }),
+			/"GroupName" length must be at least 3 characters long/
 		);
 
 		// trimmed
 		assert.equal(
-			tName.fromEvent(ns, { group: '  abc ' }),
-			'rbeta_app_ddb_abc'
+			TableName.fromEvent('ns', { group: '  abc ' }).toString(),
+			'rbeta_ns_ddb_abc'
 		);
 	});
 
 	it('get tracking table name from event', () => {
 		assert.equal(
-			tName.trackingName(tName.fromEvent(ns, { group: '  abc ' })),
+			TableName.fromEvent('app', { group: '  abc ' }).trackingName,
 			'rbeta_app_ddb_abc_tracking'
 		);
-		assert.equal(tName.trackingName(' abc   '), 'abc_tracking');
 	});
 
 });

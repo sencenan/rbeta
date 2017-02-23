@@ -170,6 +170,10 @@ class ST {
 		return null;
 	}
 
+	toPrimitive() {
+		return JSON.parse(JSON.stringify(this));
+	}
+
 };
 
 /* Schematic Value */
@@ -181,6 +185,14 @@ ST.SV = class SV extends ST {
 
 	toString() {
 		return '' + this.value;
+	}
+
+	toPrimitive() {
+		return this.value;
+	}
+
+	toJSON() {
+		return this.toString();
 	}
 
 };

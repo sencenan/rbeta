@@ -18,7 +18,7 @@ module.exports = class TableName extends ST {
 		return ST.joi.object().keys({
 			namespace: ST.joi.st(Namespace).required(),
 			groupName: ST.joi.st(GroupName).required()
-		});
+		}).required().label('parameter');
 	}
 
 	get trackingName() {

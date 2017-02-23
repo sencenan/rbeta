@@ -5,7 +5,7 @@ const
 	EmitEvent = require('./emit-event'),
 	FetchEvents = require('./fetch-events');
 
-describe('events', function() {
+describe('fetch events', function() {
 
 	const testCtx = {
 		AWS: AWS,
