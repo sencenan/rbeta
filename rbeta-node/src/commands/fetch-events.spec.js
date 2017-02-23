@@ -1,22 +1,30 @@
 'use strict';
 
-const bluebird = require('bluebird');
+const
+	bluebird = require('bluebird'),
+	EmitEvent = require('./emit-event'),
+	FetchEvents = require('./fetch-events');
 
 describe('events', function() {
 
+	const testCtx = {
+		AWS: AWS,
+		namespace: 'test'
+	};
+
 	before(function(done) {
 		// create table with data
-		rbeta
-			.emit({
+		new EmitEvent({
 				group: 'eventsTest',
 				aggregate: 'a',
 				type: 'update',
 				seq: 0,
 				data: { value: 0, filler: new Buffer(1024 * 128) }
 			})
+			.run(testCtx)
 			.then(() => bluebird.map(
 				[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-				(v) => rbeta.emit({
+				(v) => new EmitEvent({
 					group: 'eventsTest',
 					aggregate: 'a',
 					type: 'update',
@@ -25,31 +33,39 @@ describe('events', function() {
 						value: v,
 						filler: new Buffer(1024 * 128)
 					}
-				})
+				}).run(testCtx)
 			))
 			.then(() => done()).catch(done);
 	});
 
 	it('validates paramters', function() {
 		assert.throws(
-			() => rbeta.events(),
+			() => new FetchEvents(),
+			/"parameter" is required/
+		);
+
+		assert.throws(
+			() => new FetchEvents({}),
 			/"group" is required/
 		);
 
 		assert.throws(
-			() => rbeta.events('group'),
+			() => new FetchEvents({ group: 'group' }),
 			/"aggregate" is required/
 		);
 
-		rbeta.events('group', 'a');
-		rbeta.events('group', 'a', 4);
+		new FetchEvents({ group: 'group', aggregate: 'a' });
+		new FetchEvents({ group: 'group', aggregate: 'a', fromSeq: 4 });
 	});
 
 	it('fetch all events with paging', function(done) {
 		this.slow(500); // slow because data item is large
 
-		rbeta
-			.events('eventsTest', 'a')
+		new FetchEvents({
+			group: 'eventsTest',
+			aggregate: 'a'
+		})
+			.run(testCtx)
 			.then((items) => {
 				let i = 0;
 
@@ -62,8 +78,12 @@ describe('events', function() {
 	it('fetch all events starting from N', function(done) {
 		this.slow(500); // slow because data item is large
 
-		rbeta
-			.events('eventsTest', 'a', 7)
+		new FetchEvents({
+			group: 'eventsTest',
+			aggregate: 'a',
+			fromSeq: 7
+		})
+			.run(testCtx)
 			.then((items) => {
 				let i = 7;
 
@@ -78,8 +98,13 @@ describe('events', function() {
 
 		let lo = 2, hi = 7;
 
-		rbeta
-			.events('eventsTest', 'a', 2, 7)
+		new FetchEvents({
+			group: 'eventsTest',
+			aggregate: 'a',
+			fromSeq: 2,
+			toSeq: 7
+		})
+			.run(testCtx)
 			.then((items) => {
 				let i = lo;
 
@@ -92,14 +117,20 @@ describe('events', function() {
 	it('fetch empty aggregate', function(done) {
 		this.slow(500); // slow because data item is large
 
-		rbeta
-			.events('eventsTest', 'empty')
+		new FetchEvents({
+			group: 'eventsTest',
+			aggregate: 'empty'
+		})
+			.run(testCtx)
 			.then((items) => assert.deepEqual(items, []))
 			.then(() => done()).catch(done);
 	});
 
 	it('fetch from nonexistent group', function(done) {
-		rbeta.events('non', 'a').catch(() => done());
+		new FetchEvents({
+			group: 'non',
+			aggregate: 'a'
+		}).run(testCtx).catch(() => done());
 	});
 
 });
