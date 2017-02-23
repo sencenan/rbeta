@@ -54,9 +54,3 @@ process.on('exit', function() {
 
 global.assert = require('assert');
 global.AWS = AWS;
-global.rbeta = require('./');
-
-global.rbeta.updateConfig({
-	namespace: 'rbeta-test',
-	AWS: AWS
-});
