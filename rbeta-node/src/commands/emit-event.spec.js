@@ -1,96 +1,101 @@
 'use strict';
 
-const Emit = require('./emit');
+const EmitEvent = require('./emit-event');
 
 describe('emit', function() {
 	this.slow(150);
 
+	const testCtx = {
+		AWS: AWS,
+		namespace: 'test'
+	};
+
 	it('validates event object', function() {
 		assert.throws(
-			() => new Emit(),
+			() => new EmitEvent(),
 			/"event" is required/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '' }),
+			() => new EmitEvent({ group: '' }),
 			/"GroupName" is not allowed to be empty/
 		);
 
 		assert.throws(
-			() => new Emit({ group: 1 }),
+			() => new EmitEvent({ group: 1 }),
 			/"GroupName" must be a string/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '1' }),
+			() => new EmitEvent({ group: '1' }),
 			/"GroupName" length must be at least 3/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '123' }),
+			() => new EmitEvent({ group: '123' }),
 			/"aggregate" is required/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '123', aggregate: '' }),
+			() => new EmitEvent({ group: '123', aggregate: '' }),
 			/"aggregate" is not allowed to be empty/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '123', aggregate: 1 }),
+			() => new EmitEvent({ group: '123', aggregate: 1 }),
 			/"aggregate" must be a string/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '123', aggregate: '1', type: '1' }),
+			() => new EmitEvent({ group: '123', aggregate: '1', type: '1' }),
 			/"seq" is required/
 		);
 
 		assert.throws(
-			() => new Emit(
+			() => new EmitEvent(
 				{ group: '123', aggregate: '1', type: '1', seq: '' }
 			),
 			/"seq" must be a number/
 		);
 
 		assert.throws(
-			() => new Emit(
+			() => new EmitEvent(
 				{ group: '123', aggregate: '1', type: '1', seq: -1 }
 			),
 			/"seq" must be greater than -1/
 		);
 
 		assert.throws(
-			() => new Emit(
+			() => new EmitEvent(
 				{ group: '123', aggregate: '1', type: '1', seq: 1.2 }
 			),
 			/"seq" must be an integer/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '123', seq: 0, aggregate: '1' }),
+			() => new EmitEvent({ group: '123', seq: 0, aggregate: '1' }),
 			/"type" is required/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '123', seq: 0, aggregate: '1', type: '' }),
+			() => new EmitEvent({ group: '123', seq: 0, aggregate: '1', type: '' }),
 			/"type" is not allowed to be empty/
 		);
 
 		assert.throws(
-			() => new Emit({ group: '123', seq: 0, aggregate: '1', type: 1 }),
+			() => new EmitEvent({ group: '123', seq: 0, aggregate: '1', type: 1 }),
 			/"type" must be a string/
 		);
 
 		assert.throws(
-			() => new Emit(
+			() => new EmitEvent(
 				{ group: '123', aggregate: '1', type: '1', seq: 0, foo: { r: 1 } }
 			),
 			/"foo" is not allowed/
 		);
 
 		assert.throws(
-			() => new Emit(
+			() => new EmitEvent(
 				{
 					group: '123', aggregate: '1', type: '1', seq: 0, foo: { r: 1 },
 					timestamp: 123
@@ -112,17 +117,14 @@ describe('emit', function() {
 			(err, data) => {
 				assert.equal(err.code, 'ResourceNotFoundException');
 
-				new Emit({
+				new EmitEvent({
 						group: 'emitTest',
 						aggregate: '1',
 						type: '1',
 						seq: 0,
 						data: { r: 1 }
 					})
-					.run({
-						AWS: AWS,
-						namespace: 'test'
-					})
+					.run(testCtx)
 					.then((data) => {
 						ddb.describeTable(
 							{ TableName: tableName },
@@ -150,26 +152,20 @@ describe('emit', function() {
 	});
 
 	it('does not allow emitting event of duplicated event', function(done) {
-		new Emit({
+		new EmitEvent({
 				group: 'emitTest',
 				aggregate: 'test1',
 				type: '1',
 				seq: 0
 			})
-			.run({
-				AWS: AWS,
-				namespace: 'test'
-			})
+			.run(testCtx)
 			.then(
-				() => new Emit({
+				() => new EmitEvent({
 					group: 'emitTest',
 					aggregate: 'test1',
 					type: '2',
 					seq: 0
-				}).run({
-					AWS: AWS,
-					namespace: 'test'
-				})
+				}).run(testCtx)
 			)
 			.catch((err) => {
 				assert.equal(err.code, 'ConditionalCheckFailedException');
@@ -178,27 +174,20 @@ describe('emit', function() {
 	});
 
 	it('test emitting events', function(done) {
-		new Emit({
+		new EmitEvent({
 				group: 'emitTest',
 				aggregate: 'test2',
 				type: '1',
 				seq: 0
 			})
-			.run({
-				AWS: AWS,
-				namespace: 'test'
-			})
+			.run(testCtx)
 			.then(
-				() => new Emit({
+				() => new EmitEvent({
 					group: 'emitTest',
 					aggregate: 'test2',
 					type: '2',
 					seq: 1
-				})
-				.run({
-					AWS: AWS,
-					namespace: 'test'
-				})
+				}).run(testCtx)
 			)
 			.then(() => done()).catch(done);
 	});
