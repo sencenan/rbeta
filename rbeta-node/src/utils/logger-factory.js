@@ -10,6 +10,7 @@ exports.makeForClass = function(constructorFn) {
 };
 
 exports.make = function(namespace) {
+	/* istanbul ignore next */
 	return function() {
 		log(
 			'%s, %s: %s',
