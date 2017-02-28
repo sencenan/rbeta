@@ -5,9 +5,9 @@ const rbeta = require('rbeta-node');
 module.exports = {
 	name: 'example-reducer',
 	// S -> IO(S)
-	pump: () => {},
+	pump: (state) => {},
 	// a -> S
-	state: () => {},
+	state: (aggregate) => {},
 	// S -> E -> S
 	reduce: (state, event) => {}
 };

@@ -16,4 +16,6 @@ iterate each event
 
 error does not stop the entire process, try to process all events
 errors are however collected and pass to callback as failure
+
+pump(reduce(state(aggregate), event))
 ```
