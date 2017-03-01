@@ -2,7 +2,7 @@
 
 const TableName = require('./table-name');
 
-describe('table-name', function() {
+describe('table name', function() {
 
 	it('get table name from group name', () => {
 		assert.throws(

@@ -6,6 +6,11 @@ const
 
 describe('ddb lib', function() {
 
+	const testCtx = {
+		AWS: AWS,
+		namespace: 'test'
+	};
+
 	const ddbEvents = [
 		{
 			"eventID": "54e79ccc0a2fecd6b44e74401e54db9f",
@@ -103,6 +108,7 @@ describe('ddb lib', function() {
 	it('unmarshal ddb item', () => {
 		assert.deepEqual(
 			unmarshalItem(
+				testCtx,
 				{
 					"aggregate": { "S": "a1" },
 					"seq": { "N": 0 },
@@ -115,6 +121,9 @@ describe('ddb lib', function() {
 				timestamp: '0'
 			}
 		);
+
+		assert.deepEqual(unmarshalItem(testCtx, {}), {});
+		assert.deepEqual(unmarshalItem(testCtx, null), null);
 	});
 
 });
