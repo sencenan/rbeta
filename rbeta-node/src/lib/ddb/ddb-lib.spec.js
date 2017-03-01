@@ -1,9 +1,10 @@
 'use strict';
 
 const
-	groupDDBEvents = require('./group-ddb-events');
+	groupEvents = require('./group-events'),
+	unmarshalItem = require('./unmarshal-item');
 
-describe('group ddb stream events', function() {
+describe('ddb lib', function() {
 
 	const ddbEvents = [
 		{
@@ -86,16 +87,33 @@ describe('group ddb stream events', function() {
 	];
 
 	it('group empty event.Records', () => {
-		assert.deepEqual(groupDDBEvents({ Records: [] }), []);
+		assert.deepEqual(groupEvents({ Records: [] }), []);
 	});
 
 	it('group and sort event.Records', () => {
 		assert.deepEqual(
-			groupDDBEvents({ Records: ddbEvents }),
+			groupEvents({ Records: ddbEvents }),
 			[
 				[ddbEvents[0], ddbEvents[3], ddbEvents[1], ddbEvents[2]],
 				[ddbEvents[4]]
 			]
+		);
+	});
+
+	it('unmarshal ddb item', () => {
+		assert.deepEqual(
+			unmarshalItem(
+				{
+					"aggregate": { "S": "a1" },
+					"seq": { "N": 0 },
+					"timestamp": { "S": "0" }
+				}
+			),
+			{
+				aggregate: 'a1',
+				seq: 0,
+				timestamp: '0'
+			}
 		);
 	});
 

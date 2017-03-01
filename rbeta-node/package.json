@@ -7,7 +7,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --opts ./mocha.opts --recursive ./src/**/*.spec.js",
+    "test": "./node_modules/.bin/mocha --opts ./mocha.opts --recursive '**/*.spec.js'",
     "cover": "./node_modules/.bin/istanbul cover -x '**/test-setup.js' -x '**/*.spec.js' _mocha -- --opts ./mocha.opts ./src/**/*.spec.js"
   },
   "author": "LikeMindNetworks Inc.",
