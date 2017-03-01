@@ -91,20 +91,6 @@ describe('ddb lib', function() {
 		}
 	];
 
-	it('group empty event.Records', () => {
-		assert.deepEqual(groupEvents({ Records: [] }), []);
-	});
-
-	it('group and sort event.Records', () => {
-		assert.deepEqual(
-			groupEvents({ Records: ddbEvents }),
-			[
-				[ddbEvents[0], ddbEvents[3], ddbEvents[1], ddbEvents[2]],
-				[ddbEvents[4]]
-			]
-		);
-	});
-
 	it('unmarshal ddb item', () => {
 		assert.deepEqual(
 			unmarshalItem(
@@ -124,6 +110,25 @@ describe('ddb lib', function() {
 
 		assert.deepEqual(unmarshalItem(testCtx, {}), {});
 		assert.deepEqual(unmarshalItem(testCtx, null), null);
+	});
+
+	it('group empty event.Records', () => {
+		assert.deepEqual(groupEvents(testCtx, { Records: [] }), []);
+	});
+
+	it('group and sort event.Records', () => {
+		assert.deepEqual(
+			groupEvents(testCtx, { Records: ddbEvents }),
+			[
+				[
+					{ aggregate: 'a1', seq: 0, timestamp: '0' },
+					{ aggregate: 'a1', seq: 2, timestamp: '1' }
+				],
+				[
+					{ aggregate: 'a2', seq: 0, timestamp: '0' }
+				]
+			]
+		);
 	});
 
 });
