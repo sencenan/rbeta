@@ -331,4 +331,51 @@ describe('Type SchematicType', function() {
 		);
 	});
 
+	it('ST to JSON', function() {
+		class H extends ST {
+
+			static get schema() {
+				return ST.joi.object().keys({
+					g: ST.joi.st(G).required(),
+					v: ST.joi.st(V).required(),
+					n: ST.joi.st(N).required(),
+					m: ST.joi.object().keys({
+						g: ST.joi.st(G).required(),
+						n: ST.joi.st(N).required()
+					}).required()
+				}).unknown(true);
+			}
+
+		};
+
+		const b = new Buffer('buffer');
+
+		assert.deepEqual(
+			JSON.stringify(
+				new H({
+					g: { value: 3 },
+					v: 'p',
+					n: 2,
+					m: {
+						g: { value: 3 },
+						n: 3
+					},
+					b: b
+				})
+			),
+			JSON.stringify(
+				{
+					g: { value: 3 },
+					v: 'p',
+					n: 2,
+					m: {
+						g: { value: 3 },
+						n: 3
+					},
+					b: b
+				}
+			)
+		);
+	});
+
 });

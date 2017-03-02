@@ -208,7 +208,7 @@ ST.SV = class SV extends ST {
 	}
 
 	toJSON() {
-		return this.toString();
+		return this.value;
 	}
 
 };
