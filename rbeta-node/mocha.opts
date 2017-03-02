@@ -1,2 +1,2 @@
---recursive
+--slow 500
 ./test-setup.js

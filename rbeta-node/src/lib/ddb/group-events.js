@@ -3,10 +3,7 @@
 const unmarshalItem = require('./unmarshal-item');
 
 const
-	eventComparator = (a, b) =>
-		a.dynamodb.SequenceNumber < b.dynamodb.SequenceNumber
-			? -1
-			: (a.dynamodb.SequenceNumber > b.dynamodb.SequenceNumber ? 1 : 0),
+	eventComparator = (a, b) => a.dynamodb.Keys.seq.N - b.dynamodb.Keys.seq.N,
 	eventFilter = e => e.eventName === 'INSERT' || e.eventName === 'MODIFY';
 
 /*

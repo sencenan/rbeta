@@ -8,7 +8,7 @@ const
 	TableName = require('../types/table-name'),
 	NewEvent = require('../types/new-event');
 
-module.exports = class TrackEvent extends Command {
+module.exports = class TrackReduction extends Command {
 
 	static get schema() {
 		return ST.joi.object().keys({

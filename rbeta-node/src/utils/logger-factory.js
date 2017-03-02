@@ -3,7 +3,7 @@
 var
 	util = require('util'),
 
-	log = util.debuglog('DEAD');
+	log = util.debuglog('rbeta');
 
 exports.makeForClass = function(constructorFn) {
 	return exports.make(constructorFn.name);

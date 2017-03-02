@@ -3,7 +3,6 @@
 const EmitEvent = require('./emit-event');
 
 describe('emit event', function() {
-	this.slow(150);
 
 	const testCtx = {
 		AWS: AWS,
