@@ -17,20 +17,35 @@ const
  */
 module.exports = function(ctx, rawEvent) {
 	const grouped = rawEvent.Records.reduce((a, r) => {
-		const aggregate = r.dynamodb.Keys.aggregate.S;
+		const
+			aggregate = r.dynamodb.Keys.aggregate.S,
+			group = r.dynamodb.Keys.group.S;
 
-		if (!a[aggregate]) {
-			a[aggregate] = [];
+		if (!a[group]) {
+			a[group] = {};
 		}
 
-		a[aggregate].push(r);
+		if (!a[group][aggregate]) {
+			a[group][aggregate] = [];
+		}
+
+		a[group][aggregate].push(r);
 		return a;
 	}, {});
 
-	return Object.keys(grouped).sort().map(
-		a => grouped[a]
-			.sort(eventComparator)
-			.filter(eventFilter)
-			.map(e => unmarshalItem(ctx, e.dynamodb.NewImage))
+	return Object.keys(grouped).sort().reduce(
+		(list, g) => {
+			Object.keys(grouped[g]).sort().map(
+				a => list.push(
+					grouped[g][a]
+						.sort(eventComparator)
+						.filter(eventFilter)
+						.map(e => unmarshalItem(ctx, e.dynamodb.NewImage))
+				)
+			);
+
+			return list;
+		},
+		[]
 	);
 };

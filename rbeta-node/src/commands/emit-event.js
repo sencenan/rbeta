@@ -13,7 +13,7 @@ const
 		new ctx.AWS.DynamoDB.DocumentClient().put(
 			{
 				TableName: TableName.fromEvent(ctx.namespace, event).toString(),
-				Item: event,
+				Item: event.toPrimitive(),
 				ConditionExpression: 'attribute_not_exists(#s)',
 				ExpressionAttributeNames: { '#s': 'seq' }
 			},

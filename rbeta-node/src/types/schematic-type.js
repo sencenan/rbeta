@@ -170,8 +170,24 @@ class ST {
 		return null;
 	}
 
+	static toPrimitive(v) {
+		const res = {};
+
+		for (let k in v) {
+			if (v[k] instanceof ST) {
+				res[k] = v[k].toPrimitive();
+			} else if (typeof v[k] === 'object' && v[k].constructor === Object) {
+				res[k] = ST.toPrimitive(v[k]);
+			} else {
+				res[k] = v[k];
+			}
+		}
+
+		return res;
+	}
+
 	toPrimitive() {
-		return JSON.parse(JSON.stringify(this));
+		return ST.toPrimitive(this);
 	}
 
 };

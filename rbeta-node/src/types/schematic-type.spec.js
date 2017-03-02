@@ -48,6 +48,14 @@ describe('Type SchematicType', function() {
 
 	};
 
+	class N extends ST.SV {
+
+		static get schema() {
+			return ST.joi.number().required();
+		}
+
+	};
+
 	it('default to joi.any()', function() {
 		const schema = ST.joi.any();
 
@@ -278,6 +286,49 @@ describe('Type SchematicType', function() {
 		);
 
 		new NGram({ v: 'abc', n: 3 });
+	});
+
+	it('ST to primitive', function() {
+		class H extends ST {
+
+			static get schema() {
+				return ST.joi.object().keys({
+					g: ST.joi.st(G).required(),
+					v: ST.joi.st(V).required(),
+					n: ST.joi.st(N).required(),
+					m: ST.joi.object().keys({
+						g: ST.joi.st(G).required(),
+						n: ST.joi.st(N).required()
+					}).required()
+				}).unknown(true);
+			}
+
+		};
+
+		const b = new Buffer('buffer');
+
+		assert.deepEqual(
+			new H({
+				g: { value: 3 },
+				v: 'p',
+				n: 2,
+				m: {
+					g: { value: 3 },
+					n: 3
+				},
+				b: b
+			}).toPrimitive(),
+			{
+				g: { value: 3 },
+				v: 'p',
+				n: 2,
+				m: {
+					g: { value: 3 },
+					n: 3
+				},
+				b: b
+			}
+		);
 	});
 
 });

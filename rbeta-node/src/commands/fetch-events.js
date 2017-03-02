@@ -27,7 +27,7 @@ module.exports = class FetchEvents extends Command {
 			Select: 'ALL_ATTRIBUTES',
 			KeyConditionExpression: '#a = :a',
 			ExpressionAttributeNames: { '#a': 'aggregate', '#s': 'seq' },
-			ExpressionAttributeValues: { ':a': this.aggregate.toString() },
+			ExpressionAttributeValues: { ':a': this.aggregate.toPrimitive() },
 			ScanIndexForward: true
 		};
 

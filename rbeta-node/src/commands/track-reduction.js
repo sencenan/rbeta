@@ -26,7 +26,7 @@ module.exports = class TrackEvent extends Command {
 						namespace: ctx.namespace, group: this.group
 					}).trackingName,
 					Item: {
-						aggregate: this.event.aggregate,
+						aggregate: this.event.aggregate.toPrimitive(),
 						reducerName: this.reducerName.toPrimitive(),
 						event: this.event.toPrimitive(),
 						timestamp: new Date().toISOString()
