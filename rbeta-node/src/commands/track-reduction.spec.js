@@ -12,16 +12,16 @@ describe('track event reduction', function() {
 			AWS: AWS,
 			namespace: 'test'
 		},
-		EVENT = {
+		mkEvent = (agg, seq) => ({
 			group: 'trackTest',
-			aggregate: 'a1',
+			aggregate: agg,
 			type: 'update',
-			seq: 0,
+			seq: seq,
 			data: {}
-		};
+		});
 
-	before(function(done) {
-		new EmitEvent(EVENT).run(testCtx).then(() => done());
+	before(done => {
+		new EmitEvent(mkEvent('a', 0)).run(testCtx).then(() => done());
 	});
 
 	it('validate parameters', function() {
@@ -47,15 +47,15 @@ describe('track event reduction', function() {
 		new TrackReduction({
 			group: 'abc',
 			reducerName: 'a',
-			event: EVENT
+			event: mkEvent('a', 1)
 		});
 	});
 
-	it('track seq handled by a reducer', function(done) {
+	it('track reduction', function(done) {
 		new TrackReduction({
 			group: 'trackTest',
 			reducerName: 'reducer1',
-			event: EVENT
+			event: mkEvent('a1', 0)
 		})
 			.run(testCtx)
 			.then(() => new Promise(
@@ -74,7 +74,7 @@ describe('track event reduction', function() {
 					(err, data) => err ? reject(err) : resolve(data)
 				)
 			))
-			.then((data) => {
+			.then(data => {
 				assert.equal(data.Items[0].reducerName, 'reducer1');
 				assert.equal(data.Items[0].aggregate, 'a1');
 				assert.equal(data.Items[0].event.aggregate, 'a1');
@@ -82,27 +82,118 @@ describe('track event reduction', function() {
 			.then(() => done()).catch(done);
 	});
 
-	it('retrieve last reduced event', function(done) {
+	var
+		iota = 0,
+		handleFailedCondition = err => assert.equal(
+			err.message, 'The conditional request failed'
+		);
+
+	it('track reduction, preventing duplicated seq(null)', function(done) {
+		const agg = 'agg' + (iota++);
+
 		new TrackReduction({
 			group: 'trackTest',
 			reducerName: 'reducer1',
-			event: EVENT
+			event: mkEvent(agg, 0)
+		})
+			.run(testCtx)
+			.then(
+				// failed previousSeq already used
+				() => new TrackReduction({
+					group: 'trackTest',
+					reducerName: 'reducer1',
+					event: mkEvent(agg, 0)
+				}).run(testCtx).catch(handleFailedCondition)
+			)
+			.then(
+				() => new TrackReduction({
+					group: 'trackTest',
+					reducerName: 'reducer1',
+					event: mkEvent(agg + 'x', 0)
+				}).run(testCtx)
+			)
+			.then(() => done()).catch(done);
+	});
+
+	it('track reduction, preventing duplicated seq', function(done) {
+		const agg = 'agg' + (iota++);
+
+		new TrackReduction({
+			group: 'trackTest',
+			reducerName: 'reducer1',
+			event: mkEvent(agg, 0)
+		})
+			.run(testCtx)
+			.then(
+				() => new TrackReduction({
+					group: 'trackTest',
+					reducerName: 'reducer1',
+					event: mkEvent(agg, 1),
+					previousSeq: 0
+				}).run(testCtx)
+			)
+			.then(
+				() => new TrackReduction({
+					group: 'trackTest',
+					reducerName: 'reducer1',
+					event: mkEvent(agg, 3),
+					previousSeq: 1
+				}).run(testCtx)
+			)
+			.then(
+				// failed: event seq must increase
+				() => new TrackReduction({
+					group: 'trackTest',
+					reducerName: 'reducer1',
+					event: mkEvent(agg, 3),
+					previousSeq: 3
+				}).run(testCtx).catch(handleFailedCondition)
+			)
+			.then(
+				// failed: previousSeq must match
+				() => new TrackReduction({
+					group: 'trackTest',
+					reducerName: 'reducer1',
+					event: mkEvent(agg, 4),
+					previousSeq: 5
+				}).run(testCtx).catch(handleFailedCondition)
+			)
+			.then(
+				() => new TrackReduction({
+					group: 'trackTest',
+					reducerName: 'reducer1',
+					event: mkEvent(agg, 5),
+					previousSeq: 3
+				}).run(testCtx)
+			)
+			.then(() => done()).catch(done);
+	});
+
+	it('retrieve last reduced event', function(done) {
+		const agg = 'agg' + (iota++);
+
+		new TrackReduction({
+			group: 'trackTest',
+			reducerName: 'reducer1',
+			event: mkEvent(agg, 0)
 		})
 			.run(testCtx)
 			.then(() => new FetchLastReduction({
 				group: 'trackTest',
 				reducerName: 'reducer1',
-				aggregate: 'a1'
+				aggregate: agg
 			}).run(testCtx))
-			.then(event => { assert.deepEqual(event, EVENT) })
+			.then(event => { assert.deepEqual(event, mkEvent(agg, 0)) })
 			.then(() => done()).catch(done);
 	});
 
 	it('retrieve last reduced event, empty aggregate', function(done) {
+		const agg = 'agg' + (iota++);
+
 		new FetchLastReduction({
 			group: 'trackTest',
 			reducerName: 'reducer1',
-			aggregate: 'a2'
+			aggregate: agg
 		})
 			.run(testCtx)
 			.then(event => { assert.equal(event, undefined); })
@@ -113,7 +204,7 @@ describe('track event reduction', function() {
 		new TrackReduction({
 			group: 'NotThere',
 			reducerName: 'reducer1',
-			event: EVENT
+			event: mkEvent('a4', 0)
 		}).run(testCtx).catch(() => done());
 	});
 

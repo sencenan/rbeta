@@ -88,11 +88,12 @@ module.exports = class ReduceEvents extends Command {
 			group: this.group,
 			reducerName: this.reducer.name,
 			aggregate: this.aggregate
-		}).run(ctx).then(lastReduction => this.lastReduction = lastReduction);
+		}).run(ctx).then(e => this.lastReducedEvent = e);
 	}
 
 	_normalizeEvents(ctx) {
-		let lastReducedSeq = this.lastReduction && this.lastReduction.seq || -1;
+		let lastReducedSeq
+				= this.lastReducedEvent && this.lastReducedEvent.seq || -1;
 
 		this.log(
 			'last reduced seq: %s. oldest event seq: %s',
@@ -125,6 +126,11 @@ module.exports = class ReduceEvents extends Command {
 		}
 	}
 
+	/*
+	 * The fundamental difficulty here is to protect the integrity of
+	 * reducer.state(). It is not always possible to recover the last event
+	 * reduced from the value of reducer.state().
+	 */
 	run(ctx) {
 		this.log(
 			'starting reducer [%s] for aggregate [%s] group [%s] events[%s - %s]',
@@ -148,7 +154,10 @@ module.exports = class ReduceEvents extends Command {
 				res => new TrackReduction({
 					group: this.group,
 					reducerName: this.reducer.name,
-					event: this.events[this.events.length - 1]
+					event: this.events[this.events.length - 1],
+					previousSeq: this.lastReducedEvent
+						? this.lastReducedEvent.seq
+						: undefined
 				}).run(ctx).then(() => res)
 			);
 	}
