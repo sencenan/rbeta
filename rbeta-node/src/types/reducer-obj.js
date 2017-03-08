@@ -9,6 +9,7 @@ module.exports = class ReducerObj extends ST {
 	static get schema() {
 		return ST.joi.object().keys({
 			name: ST.joi.st(ReducerName).required(),
+			aws: ST.joi.func().optional(),
 			persist: ST.joi.func().required(),
 			state: ST.joi.func().required(),
 			reduce: ST.joi.func().required()
