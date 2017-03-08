@@ -9,7 +9,7 @@ const
 	TrackReduction = require('./track-reduction'),
 
 	ST = require('../types/schematic-type'),
-	NewEvent = require('../types/new-event'),
+	StoredEvent = require('../types/stored-event'),
 	ReducerObj = require('../types/reducer-obj'),
 
 	returnp = require('../utils/return-promise');
@@ -38,7 +38,7 @@ module.exports = class ReduceEvents extends Command {
 	static get schema() {
 		return ST.joi.object().keys({
 			reducer: ST.joi.st(ReducerObj).required(),
-			events: ST.joi.array().items(ST.joi.st(NewEvent)).required()
+			events: ST.joi.array().items(ST.joi.st(StoredEvent)).required()
 		}).required().label('parameter');
 	}
 

@@ -23,22 +23,27 @@ describe('reduce event streams', function() {
 			AWS: AWS,
 			namespace: 'test'
 		},
-		mkEvent = seq => ({
+		mkNewEvent = seq => ({
 			group: group,
 			aggregate: 'a',
 			type: 'update',
 			seq: seq,
 			data: { value: seq + 1 }
 		}),
+		mkEvent = seq => {
+			const e = mkNewEvent(seq);
+			e.timestamp = new Date().toISOString();
+			return e;
+		},
 		checkValue = seq => (seq + 2) * (seq + 1) / 2;
 
 	before(function(done) {
 		// create table with data
-		new EmitEvent(mkEvent(0))
+		new EmitEvent(mkNewEvent(0))
 			.run(testCtx)
 			.then(() => bluebird.map(
 				[1, 2, 3, 4, 5, 6, 7, 8, 9],
-				(v) => new EmitEvent(mkEvent(v)).run(testCtx)
+				(v) => new EmitEvent(mkNewEvent(v)).run(testCtx)
 			))
 			.then(() => done()).catch(done);
 	});
@@ -55,7 +60,7 @@ describe('reduce event streams', function() {
 		assert.throws(() => new ReduceEvents({
 			reducer: mockReducer,
 			events: [{}]
-		}), /conform to schema of type NewEvent/);
+		}), /conform to schema of type StoredEvent/);
 		assert.throws(() => new ReduceEvents({
 			reducer: mockReducer,
 			events: []
@@ -67,7 +72,8 @@ describe('reduce event streams', function() {
 				group: group,
 				aggregate: 'a',
 				type: 'update',
-				seq: 0
+				seq: 0,
+				timestamp: '1'
 			}]
 		});
 	});
@@ -80,13 +86,15 @@ describe('reduce event streams', function() {
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '1'
 				},
 				{
 					group: group,
 					aggregate: 'b',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '2'
 				}
 			]
 		}), /Events must have the same aggregate and group/);
@@ -98,13 +106,15 @@ describe('reduce event streams', function() {
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '1'
 				},
 				{
 					group: group + 'x',
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '2'
 				}
 			]
 		}), /Events must have the same aggregate and group/);
@@ -116,13 +126,15 @@ describe('reduce event streams', function() {
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '1'
 				},
 				{
 					group: group + 'x',
 					aggregate: 'b',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '2'
 				}
 			]
 		}), /Events must have the same aggregate and group/);
@@ -134,13 +146,15 @@ describe('reduce event streams', function() {
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '1'
 				},
 				{
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '2'
 				}
 			]
 		}), /Events must have unique seq value/);
@@ -152,13 +166,15 @@ describe('reduce event streams', function() {
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '1'
 				},
 				{
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 1
+					seq: 1,
+					timestamp: '2'
 				}
 			]
 		});
@@ -171,13 +187,15 @@ describe('reduce event streams', function() {
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 0
+					seq: 0,
+					timestamp: '1'
 				},
 				{
 					group: group,
 					aggregate: 'a',
 					type: 'update',
-					seq: 10
+					seq: 10,
+					timestamp: '2'
 				}
 			]
 		});
@@ -190,7 +208,8 @@ describe('reduce event streams', function() {
 				group: 'foo',
 				aggregate: 'a',
 				type: 'update',
-				seq: 0
+				seq: 0,
+				timestamp: '1'
 			} ]
 		})
 			.run(testCtx)
@@ -209,7 +228,10 @@ describe('reduce event streams', function() {
 					group: group,
 					reducerName: 'mock-reducer',
 					aggregate: 'a'
-				}).run(testCtx).then(e => assert.deepEqual(e, mkEvent(1)))
+				}).run(testCtx).then(e => {
+					delete e.timestamp;
+					assert.deepEqual(e, mkNewEvent(1));
+				})
 			)
 			.then(() => assert.equal(mockReducer.state('a').value, checkValue(1)))
 			.then(

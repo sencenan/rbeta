@@ -6,7 +6,7 @@ const
 	GroupName = require('../types/group-name'),
 	ReducerName = require('../types/reducer-name'),
 	TableName = require('../types/table-name'),
-	NewEvent = require('../types/new-event'),
+	StoredEvent = require('../types/stored-event'),
 	SequenceNumber = require('../types/sequence-number');
 
 module.exports = class TrackReduction extends Command {
@@ -15,7 +15,7 @@ module.exports = class TrackReduction extends Command {
 		return ST.joi.object().keys({
 			group: ST.joi.st(GroupName).required(),
 			reducerName: ST.joi.st(ReducerName).required(),
-			event: ST.joi.st(NewEvent).required(),
+			event: ST.joi.st(StoredEvent).required(),
 			previousSeq: ST.joi.st(SequenceNumber),
 		}).required().label('parameter');
 	}

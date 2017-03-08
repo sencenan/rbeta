@@ -4,22 +4,26 @@ const
 	EmitEvent = require('../../commands/emit-event'),
 	createStreamProcessor = require('./create-stream-processor');
 
-describe.only('Create stream processor', function() {
+describe('Create stream processor', function() {
 
 	const
-		db = {},
-		mockReducer = {
-			name: 'mock-reducer-createStreamProcessorTest',
-			persist: (group, aggregate, state) => db[aggregate] = state,
-			state: (aggregate) => db[aggregate],
-			reduce: (state, event) => ({
-				value: (state ? state.value : 0) + event.data.value
-			})
-		},
 		group = 'createStreamProcessorTest',
 		testCtx = {
 			AWS: AWS,
 			namespace: 'test'
+		},
+		mkReducer = function(reducerName) {
+			var db = {};
+
+			return {
+				db: db,
+				name: reducerName,
+				persist: (group, aggregate, state) => db[aggregate] = state,
+				state: (aggregate) => db[aggregate],
+				reduce: (state, event) => ({
+					value: (state ? state.value : 0) + event.data.value
+				})
+			};
 		},
 		mkEvent = seq => ({
 			group: group,
@@ -36,35 +40,50 @@ describe.only('Create stream processor', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": group },
-					"seq": { "N": 0 },
-					"timestamp": { "S": "0" }
+					"seq": { "N": 0 }
 				},
 				"NewImage": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": "g1" },
+					"group": { "S": group },
 					"seq": { "N": 0 },
-					"timestamp": { "S": "0" }
-				},
-				"SequenceNumber": "211178100000000006555535837"
+					"timestamp": { "S": "0" },
+					"type": { "S": "newValue" },
+					"data": { "M": { "value": { "N": 1 } } }
+				}
 			}
 		},
 		{
-			"eventName": "MODIFY",
+			"eventName": "INSERT",
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": group },
-					"seq": { "N": 2 },
-					"timestamp": { "S": "1" }
+					"seq": { "N": 1 }
 				},
 				"NewImage": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": "g1" },
-					"seq": { "N": 2 },
-					"timestamp": { "S": "1" }
+					"group": { "S": group },
+					"seq": { "N": 1 },
+					"timestamp": { "S": "1" },
+					"type": { "S": "newValue" },
+					"data": { "M": { "value": { "N": 2 } } }
+				}
+			}
+		},
+		{
+			"eventName": "INSERT",
+			"dynamodb": {
+				"Keys": {
+					"aggregate": { "S": "a1" },
+					"seq": { "N": 2 }
 				},
-				"SequenceNumber": "211178100000000006555535838"
+				"NewImage": {
+					"aggregate": { "S": "a1" },
+					"group": { "S": group },
+					"seq": { "N": 2 },
+					"timestamp": { "S": "1" },
+					"type": { "S": "newValue" },
+					"data": { "M": { "value": { "N": 5 } } }
+				}
 			}
 		},
 		{
@@ -72,17 +91,16 @@ describe.only('Create stream processor', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a2" },
-					"group": { "S": group },
-					"seq": { "N": 0 },
-					"timestamp": { "S": "0" }
+					"seq": { "N": 0 }
 				},
 				"NewImage": {
 					"aggregate": { "S": "a2" },
 					"group": { "S": group },
 					"seq": { "N": 0 },
-					"timestamp": { "S": "0" }
-				},
-				"SequenceNumber": "311178100000000006555535837"
+					"timestamp": { "S": "0" },
+					"type": { "S": "newValue" },
+					"data": { "M": { "value": { "N": 3 } } }
+				}
 			}
 		}
 	];
@@ -105,10 +123,48 @@ describe.only('Create stream processor', function() {
 			/"reducer" must conform to schema of type ReducerObj/
 		);
 
-		createStreamProcessor(testCtx, mockReducer);
+		createStreamProcessor(testCtx, mkReducer('csptestvalidating'));
 	});
 
-	it('', () => {
+	it('handle error in processor', cb => {
+		const
+			proc = createStreamProcessor(testCtx, mkReducer('csptesterror')),
+			eventMissingTable = JSON.parse(JSON.stringify(ddbEvents[0]));
+
+		eventMissingTable.dynamodb.NewImage.group.S = 'boo';
+
+		proc({ Records: [eventMissingTable, ddbEvents[3]] }, {}, (err, data) => {
+			assert(err);
+			assert.equal(err[1].aggregate, 'a2');
+			assert.equal(err[1].group, group);
+
+			cb();
+		});
+	});
+
+	it('process empty event stream', cb => {
+		const proc = createStreamProcessor(testCtx, mkReducer('csptestempty'));
+
+		proc({ Records: [] }, {}, (err, data) => {
+			assert(!err);
+			assert.deepEqual(data, []);
+
+			cb();
+		});
+	});
+
+	it('process event stream', cb => {
+		const
+			reducer = mkReducer('csptest'),
+			proc = createStreamProcessor(testCtx, reducer);
+
+		proc({ Records: ddbEvents }, {}, (err, data) => {
+			assert(!err);
+			assert.equal(reducer.db['a1'].value, 1 + 2 + 5);
+			assert.equal(reducer.db['a2'].value, 3);
+
+			cb();
+		});
 	});
 
 });

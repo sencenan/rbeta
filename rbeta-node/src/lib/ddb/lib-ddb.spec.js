@@ -17,9 +17,7 @@ describe('ddb lib', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": "g1" },
-					"seq": { "N": 0 },
-					"timestamp": { "S": "0" }
+					"seq": { "N": 0 }
 				},
 				"NewImage": {
 					"aggregate": { "S": "a1" },
@@ -35,9 +33,7 @@ describe('ddb lib', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": "g1" },
-					"seq": { "N": 1 },
-					"timestamp": { "S": "2" }
+					"seq": { "N": 1 }
 				},
 				"SequenceNumber": "211178100000000006555535839"
 			}
@@ -47,9 +43,7 @@ describe('ddb lib', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": "g1" },
-					"seq": { "N": 1 },
-					"timestamp": { "S": "2" }
+					"seq": { "N": 1 }
 				},
 				"SequenceNumber": "211178100000000006555535839"
 			}
@@ -59,9 +53,7 @@ describe('ddb lib', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a1" },
-					"group": { "S": "g1" },
-					"seq": { "N": 2 },
-					"timestamp": { "S": "1" }
+					"seq": { "N": 2 }
 				},
 				"NewImage": {
 					"aggregate": { "S": "a1" },
@@ -77,9 +69,7 @@ describe('ddb lib', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a2" },
-					"group": { "S": "g1" },
-					"seq": { "N": 0 },
-					"timestamp": { "S": "0" }
+					"seq": { "N": 0 }
 				},
 				"NewImage": {
 					"aggregate": { "S": "a2" },
@@ -95,9 +85,7 @@ describe('ddb lib', function() {
 			"dynamodb": {
 				"Keys": {
 					"aggregate": { "S": "a2" },
-					"group": { "S": "g2" },
-					"seq": { "N": 0 },
-					"timestamp": { "S": "0" }
+					"seq": { "N": 0 }
 				},
 				"NewImage": {
 					"aggregate": { "S": "a2" },

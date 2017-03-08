@@ -12,16 +12,21 @@ describe('track event reduction', function() {
 			AWS: AWS,
 			namespace: 'test'
 		},
-		mkEvent = (agg, seq) => ({
+		mkNewEvent = (agg, seq) => ({
 			group: 'trackTest',
 			aggregate: agg,
 			type: 'update',
 			seq: seq,
 			data: {}
-		});
+		}),
+		mkEvent = (agg, seq) => {
+			const e = mkNewEvent(agg, seq);
+			e.timestamp = new Date().toISOString();
+			return e;
+		};
 
 	before(done => {
-		new EmitEvent(mkEvent('a', 0)).run(testCtx).then(() => done());
+		new EmitEvent(mkNewEvent('a', 0)).run(testCtx).then(() => done());
 	});
 
 	it('validate parameters', function() {
@@ -183,7 +188,10 @@ describe('track event reduction', function() {
 				reducerName: 'reducer1',
 				aggregate: agg
 			}).run(testCtx))
-			.then(event => { assert.deepEqual(event, mkEvent(agg, 0)) })
+			.then(event => {
+				delete event.timestamp;
+				assert.deepEqual(event, mkNewEvent(agg, 0));
+			})
 			.then(() => done()).catch(done);
 	});
 

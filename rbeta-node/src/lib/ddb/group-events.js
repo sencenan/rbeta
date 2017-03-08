@@ -13,22 +13,25 @@ const
  * eventName: REMOVE is dropped
  */
 module.exports = function(ctx, rawEvent) {
-	const grouped = rawEvent.Records.reduce((a, r) => {
-		const
-			aggregate = r.dynamodb.Keys.aggregate.S,
-			group = r.dynamodb.Keys.group.S;
+	const grouped = rawEvent
+		.Records
+		.filter(eventFilter)
+		.reduce((a, r) => {
+			const
+				aggregate = r.dynamodb.Keys.aggregate.S,
+				group = r.dynamodb.NewImage.group.S;
 
-		if (!a[group]) {
-			a[group] = {};
-		}
+			if (!a[group]) {
+				a[group] = {};
+			}
 
-		if (!a[group][aggregate]) {
-			a[group][aggregate] = [];
-		}
+			if (!a[group][aggregate]) {
+				a[group][aggregate] = [];
+			}
 
-		a[group][aggregate].push(r);
-		return a;
-	}, {});
+			a[group][aggregate].push(r);
+			return a;
+		}, {})
 
 	return Object.keys(grouped).sort().reduce(
 		(list, g) => {
@@ -36,7 +39,6 @@ module.exports = function(ctx, rawEvent) {
 				a => list.push(
 					grouped[g][a]
 						.sort(eventComparator)
-						.filter(eventFilter)
 						.map(e => unmarshalItem(ctx, e.dynamodb.NewImage))
 				)
 			);

@@ -19,14 +19,20 @@ class StreamProcessor extends ST {
 	process(ctx, lambdaEvent, callback) {
 		bluebird
 			.all(
-				groupEvents(ctx, lambdaEvent).map(
-					events => new ReduceEvents({
+				groupEvents(ctx, lambdaEvent).map(events => {
+					const result = {
+						aggregate: events[0].aggregate,
+						group: events[0].group
+					};
+
+					return new ReduceEvents({
 						reducer: this.reducer,
 						events: events
 					})
-						.then(state => ({ state: state }))
-						.catch(err => ({ error: err }))
-				)
+						.run(ctx)
+						.then(s => (result.state = s, result))
+						.catch(e => (result.error = e, result));
+				})
 			)
 			.then(
 				res => res.reduce((hasErr, r) => hasErr || !!r.error, false)
@@ -38,11 +44,9 @@ class StreamProcessor extends ST {
 };
 
 module.exports = function(ctx, reducer) {
-
 	const processor = new StreamProcessor({ reducer: reducer });
 
 	return function(event, context, callback) {
-		processor(ctx, event, callback);
+		return processor.process(ctx, event, callback);
 	};
-
 };

@@ -12,7 +12,7 @@ module.exports = class ReducerObj extends ST {
 			persist: ST.joi.func().required(),
 			state: ST.joi.func().required(),
 			reduce: ST.joi.func().required()
-		}).label('reducer');
+		}).label('reducer').unknown(true);
 	}
 
 };
