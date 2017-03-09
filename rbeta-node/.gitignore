@@ -4,3 +4,4 @@ node_modules/
 coverage/
 build/
 rbeta-reducer.zip
+rbeta-reducer-bundle.js
