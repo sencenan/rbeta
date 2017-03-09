@@ -5,7 +5,10 @@
     "node": ">=4.3.2"
   },
   "description": "",
-  "main": "index.js",
+  "main": "./src/bin/index.js",
+  "bin": {
+    "rbeta-node": "./src/bin/index.js"
+  },
   "scripts": {
     "test": "./node_modules/.bin/mocha --opts ./mocha.opts --recursive '**/*.spec.js'",
     "cover": "./node_modules/.bin/istanbul cover -x '**/test-setup.js' -x '**/*.spec.js' _mocha -- --opts ./mocha.opts '**/*.spec.js'"

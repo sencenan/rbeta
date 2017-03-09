@@ -2,12 +2,15 @@
 
 const
 	Command = require('./command'),
-	ST = require('../types/schematic-type'),
-	GroupName = require('../types/group-name'),
-	ReducerName = require('../types/reducer-name'),
-	TableName = require('../types/table-name'),
-	StoredEvent = require('../types/stored-event'),
-	SequenceNumber = require('../types/sequence-number');
+	Types = require('../types/');
+
+const
+	ST = Types.ST,
+	GroupName = Types.GroupName,
+	ReducerName = Types.ReducerName,
+	TableName = Types.TableName,
+	StoredEvent = Types.StoredEvent,
+	SequenceNumber = Types.SequenceNumber;
 
 module.exports = class TrackReduction extends Command {
 

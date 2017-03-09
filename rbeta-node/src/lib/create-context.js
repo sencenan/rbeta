@@ -1,9 +1,11 @@
 'use strict';
 
+const Types = require('../types/');
+
 const
-	ST = require('../types/schematic-type'),
-	Namespace = require('../types/namespace'),
-	ReducerObj = require('../types/reducer-obj');
+	ST = Types.ST,
+	Namespace = Types.Namespace,
+	ReducerObj = Types.ReducerObj;
 
 class Context extends ST {
 	static get schema() {

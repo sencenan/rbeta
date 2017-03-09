@@ -4,15 +4,18 @@ const
 	bluebird = require('bluebird'),
 
 	Command = require('./command'),
+	Types = require('../types/'),
+
 	FetchEvents = require('./fetch-events'),
 	FetchLastReduction = require('./fetch-last-reduction'),
-	TrackReduction = require('./track-reduction'),
+	TrackReduction = require('./track-reduction');
 
-	ST = require('../types/schematic-type'),
-	StoredEvent = require('../types/stored-event'),
-	ReducerObj = require('../types/reducer-obj'),
+const
+	ST = Types.ST,
+	StoredEvent = Types.StoredEvent,
+	ReducerObj = Types.ReducerObj,
 
-	returnp = require('../utils/return-promise');
+	returnp = require('../utils').returnPromise;
 
 const
 	ERROR_NO_OP = new Error('no events to be reduced'),

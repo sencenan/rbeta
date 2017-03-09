@@ -1,8 +1,8 @@
 'use strict';
 
 const
-	EmitEvent = require('../../commands/emit-event'),
-	createStreamProcessor = require('./create-stream-processor');
+	EmitEvent = rbeta.commands.EmitEvent,
+	createStreamProcessor = rbeta.lib.ddb.createStreamProcessor;
 
 describe('Create stream processor', function() {
 

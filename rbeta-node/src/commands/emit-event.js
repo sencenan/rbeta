@@ -2,9 +2,12 @@
 
 const
 	Command = require('./command'),
-	ST = require('../types/schematic-type'),
-	NewEvent = require('../types/new-event'),
-	TableName = require('../types/table-name');
+	Types = require('../types/');
+
+const
+	ST = Types.ST,
+	NewEvent = Types.NewEvent,
+	TableName = Types.TableName;
 
 const
 	storeEvent = (ctx, event) => new Promise((resolve, reject) => {

@@ -2,8 +2,9 @@
 
 const
 	AWS = require('aws-sdk'),
+	ddbLocal = require('local-dynamo'),
 
-	ddbLocal = require('local-dynamo');
+	rbeta = require('./src/');
 
 const
 	assertOnce = function(fn) {
@@ -54,3 +55,4 @@ process.on('exit', function() {
 
 global.assert = require('assert');
 global.AWS = AWS;
+global.rbeta = rbeta;

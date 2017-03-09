@@ -2,11 +2,14 @@
 
 const
 	Command = require('./command'),
-	ST = require('../types/schematic-type'),
-	GroupName = require('../types/group-name'),
-	ReducerName = require('../types/reducer-name'),
-	AggregateName = require('../types/aggregate-name'),
-	TableName = require('../types/table-name');
+	Types = require('../types/');
+
+const
+	ST = Types.ST,
+	GroupName = Types.GroupName,
+	ReducerName = Types.ReducerName,
+	AggregateName = Types.AggregateName,
+	TableName = Types.TableName;
 
 module.exports = class FetchLastReduction extends Command {
 

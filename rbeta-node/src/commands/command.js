@@ -1,8 +1,8 @@
 'use strict';
 
-var
-	ST = require('../types/schematic-type'),
-	loggerFactory = require('../utils/logger-factory');
+const
+	ST = require('../types/').ST,
+	loggerFactory = require('../utils').loggerFactory;
 
 class Command extends ST {
 

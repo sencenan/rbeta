@@ -3,11 +3,15 @@
 const bluebird = require('bluebird');
 
 const
-	ST = require('../../types/schematic-type'),
-	ReducerObj = require('../../types/reducer-obj'),
-	ReduceEvents = require('../../commands/reduce-events'),
-
+	Types = require('../../types/'),
+	Commands = require('../../commands/'),
 	groupEvents = require('./group-events');
+
+const
+	ST = Types.ST,
+	ReducerObj = Types.ReducerObj,
+
+	ReduceEvents = Commands.ReduceEvents;
 
 class StreamProcessor extends ST {
 	static get schema() {

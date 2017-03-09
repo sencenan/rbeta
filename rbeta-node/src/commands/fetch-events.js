@@ -2,11 +2,14 @@
 
 const
 	Command = require('./command'),
-	ST = require('../types/schematic-type'),
-	GroupName = require('../types/group-name'),
-	AggregateName = require('../types/aggregate-name'),
-	SequenceNumber = require('../types/sequence-number'),
-	TableName = require('../types/table-name');
+	Types = require('../types/');
+
+const
+	ST = Types.ST,
+	GroupName = Types.GroupName,
+	AggregateName = Types.AggregateName,
+	SequenceNumber = Types.SequenceNumber,
+	TableName = Types.TableName;
 
 module.exports = class FetchEvents extends Command {
 
