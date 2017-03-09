@@ -18,5 +18,7 @@ module.exports = function(opts) {
 			zip.generate({ base64: false }),
 			'binary'
 		);
+
+		resolve({});
 	});
 };

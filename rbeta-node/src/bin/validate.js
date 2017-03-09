@@ -13,24 +13,42 @@ module.exports = function(opts) {
 
 		fs.writeFileSync(
 			testSetupShim,
-			'const reducerCtx = require("'
-				+ path.resolve(opts.output, opts.name)
-				+ '");'
-				+ 'global.reducer = reducerCtx.reducer(reducerCtx.rbeta);'
-				+ 'global.schema = require("'
-				+ path.resolve(__dirname, '../lib/schema')
-				+ '");'
+			`
+			global.bundle = require("${ path.resolve(opts.output, opts.name) }");
+			`
 		);
 
-		resolve(childProc.execFileSync(
+		childProc.execSync([
+			'mkdir -p',
+			path.resolve(opts.output, './node_modules')
+		].join(' '));
+
+		childProc.execSync([
+			'cp -r',
+			path.resolve(__dirname, '../../node_modules/aws-sdk'),
+			path.resolve(opts.output, './node_modules')
+		].join(' '));
+
+		const output = childProc.execFileSync(
 			path.resolve(__dirname, '../../node_modules/.bin/mocha'),
 			[
 				'-r', testSetupShim,
 				path.resolve(__dirname, './validate.tests.js')
 			],
 			{
-				stdio: 'inherit'
+				stdio: 'pipe',
+				cwd: opts.output,
+				env: {
+					RBETA_NAMESPACE: 'rbeta_test'
+				}
 			}
-		));
+		);
+
+		resolve({
+			task: 'rbeta.validate',
+			successful: true,
+			buildResult: opts.buildResult,
+			testResult: output.toString()
+		});
 	});
 };

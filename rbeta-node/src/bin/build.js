@@ -49,7 +49,15 @@ module.exports = function(opts) {
 			if (err || stats.hasErrors()) {
 				reject(stats.hasErrors() ? stats.compilation.errors[0] : err);
 			} else {
-				resolve(stats);
+				resolve({
+					task: 'rbeta.build',
+					successful: true,
+					output: {
+						filename: opts.output,
+						path: opts.name
+					},
+					duration: stats.endTime - stats.startTime
+				});
 			}
 		}
 	));

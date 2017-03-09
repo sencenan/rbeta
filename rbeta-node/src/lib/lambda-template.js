@@ -1,14 +1,8 @@
 'use strict';
 
-const
-	reducer = require('rbeta-reducer'),
-	rbeta = require('rbeta-node');
-
-const
-	executionContext = rbeta.lib.createContext(reducer),
-	processStream = rbeta.lib.ddb.createStreamProcessor(
-		executionContext, reducer
-	);
-
-exports.reducer = reducer;
-exports.handler = processStream;
+exports.rbeta = require('rbeta-node');
+exports.reducer = require('rbeta-reducer');
+exports.context = exports.rbeta.lib.createContext(exports.reducer);
+exports.handler = exports.rbeta.lib.ddb.createStreamProcessor(
+	exports.context, exports.reducer
+);
