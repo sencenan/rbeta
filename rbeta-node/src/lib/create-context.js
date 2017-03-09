@@ -31,8 +31,6 @@ module.exports = function(reducer) {
 			&& process.env.RBETA_NAMESPACE.trim()
 	) {
 		namespace = process.env.RBETA_NAMESPACE;
-	} else if (global.RBETA_NAMESPACE) {
-		namespace = global.RBETA_NAMESPACE;
 	}
 
 	return new Context({
