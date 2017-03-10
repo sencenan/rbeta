@@ -9,8 +9,6 @@ const argv = yargs
 	.usage('Build and package a rbeta reducer to a zip ready for aws lambda')
 	.wrap(120)
 	.epilogue('LikeMindNetworks Inc.')
-	.demandCommand(1, 1)
-	.commandDir('./commands')
 	.option('raw', {
 		alias: 'r',
 		describe: 'display raw json output',
@@ -18,6 +16,8 @@ const argv = yargs
 		default: false,
 		global: true
 	})
+	.commandDir('commands')
+	.demandCommand(1, 1)
 	.strict()
 	.help()
 	.argv;

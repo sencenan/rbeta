@@ -11,7 +11,7 @@ const
 	cliUtils = require('../utils/cli-utils');
 
 exports.command = 'validate';
-exports.describle = 'validate a rbeta reducer implementation';
+exports.describe = 'validate a rbeta reducer';
 
 exports.builder = function(yargs) {
 	return yargs

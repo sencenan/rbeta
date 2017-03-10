@@ -9,7 +9,7 @@ const cliUtils = require('../utils/cli-utils');
 
 exports.DEF_BUNDLE_NAME = 'rbeta-reducer-bundle';
 exports.command = 'build';
-exports.describle = 'build the rbeta reducer';
+exports.describe = 'build the rbeta reducer';
 
 exports.builder = function(yargs) {
 	return yargs

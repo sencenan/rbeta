@@ -7,7 +7,7 @@
   "description": "",
   "main": "./src/bin/index.js",
   "bin": {
-    "rbeta-node": "./src/bin/index.js"
+    "rbeta-node": "./src/cli/index.js"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --opts ./mocha.opts --recursive '**/*.spec.js'",

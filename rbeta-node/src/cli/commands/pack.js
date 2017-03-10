@@ -12,7 +12,7 @@ const
 
 exports.DEF_LAMBDA_ZIP_NAME = 'rbeta-reducer';
 exports.command = 'package';
-exports.describle = 'package the rbeta reducer';
+exports.describe = 'package the rbeta reducer';
 
 exports.builder = function(yargs) {
 	return yargs
