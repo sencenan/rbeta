@@ -23,10 +23,6 @@ exports.prompt = function(obj) {
 	}
 };
 
-exports.logError = function(err) {
-	return err && err.stack && exports.prompt(err.stack) || exports.prompt(err);
-};
-
 exports.getSourceDir = function() {
 	return path.resolve(__dirname, '../..');
 };
@@ -62,7 +58,10 @@ exports.chain = function(cmd, args) {
 				).then(r => (results.push(r), results)),
 				f._results
 			)
-			.catch(exports.logError)
+			.catch(err => {
+				err && err.stack ? exports.prompt(err.stack) : exports.prompt(err);
+				process.exit(1);
+			})
 	);
 
 	return f(cmd, args);

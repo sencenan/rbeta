@@ -34,13 +34,29 @@ exports.handler = args => {
 
 exports.run = function(args) {
 	return new Promise((resolve, reject) => {
+		let
+			testDataPath = path.resolve(args.entry, '../rbetatest.js'),
+			hasTestData,
+			output;
+
+		// try to get validate reducer using the test data suppilied
+		try {
+			require(testDataPath);
+			hasTestData = true;
+		} catch(ex) {}
+
 		// write shim test setup file
 		const testSetupShim = tmp.fileSync().name;
 
 		fs.writeFileSync(
 			testSetupShim,
 			`
-			global.bundle = require("${ path.resolve(args.output, args.name) }");
+				global.bundle = require("${
+					path.resolve(args.output, args.name)
+				}");
+				if (${ hasTestData }) {
+					global.testData = require("${ testDataPath }");
+				}
 			`
 		);
 
@@ -55,20 +71,33 @@ exports.run = function(args) {
 			path.resolve(args.output, './node_modules')
 		].join(' '));
 
-		const output = childProc.execFileSync(
-			path.resolve(cliUtils.getSourceDir(), '../node_modules/.bin/mocha'),
-			[
-				'-r', testSetupShim,
-				path.resolve(__dirname, '../utils/validate.tests.js')
-			],
-			{
-				stdio: 'pipe',
-				cwd: args.output,
-				env: {
-					RBETA_NAMESPACE: 'rbeta_test'
+		try {
+			output = childProc.execFileSync(
+				path.resolve(cliUtils.getSourceDir(), '../node_modules/.bin/mocha'),
+				[
+					'-r', testSetupShim,
+					path.resolve(__dirname, '../utils/validate.tests.js')
+				],
+				{
+					stdio: 'pipe',
+					cwd: args.output,
+					env: {
+						RBETA_NAMESPACE: 'rbeta_test'
+					}
 				}
+			);
+		} catch(ex) {
+			if (ex.output) {
+				throw {
+					command: exports.command,
+					buildResult: args.buildResult,
+					hasTestData: hasTestData,
+					testResult: ex.output.toString()
+				};
+			} else {
+				throw ex;
 			}
-		);
+		}
 
 		childProc.execSync([
 			'rm -r',
@@ -78,6 +107,7 @@ exports.run = function(args) {
 		resolve({
 			command: exports.command,
 			buildResult: args.buildResult,
+			hasTestData: hasTestData,
 			testResult: output.toString().trim()
 		});
 	});
