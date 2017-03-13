@@ -13,7 +13,7 @@ import (
 const Version = "0.0.1"
 
 var (
-	rbeta = kingpin.New("rbeta", "rbeta")
+	rbeta = kingpin.New("rbeta-cli", "rbeta-cli")
 	initCmd = &I.InitCmd{}
 	mapCmd = &R.MapCmd{}
 )

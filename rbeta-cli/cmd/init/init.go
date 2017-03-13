@@ -32,6 +32,10 @@ func (cmd *InitCmd) Bind(app *kingpin.Application, name string) (clause *kingpin
 	return
 }
 
+// Init:
+// 0) setup namespace and aws region
+// 1) create IAM roles + policies
+// 2) create table to track all the reducer states
 func (cmd *InitCmd) run(ctx *kingpin.ParseContext) (err error) {
 	// 0) check if terraform is present
 	terraform.MustExists()
