@@ -32,7 +32,7 @@ describe('table name', function() {
 
 		assert.equal(
 			new TableName({ namespace: 'app', group: 'abc' }).toString(),
-			'rbeta_app_ddb_abc'
+			'rbeta_ddb_app_abc'
 		);
 	});
 
@@ -55,14 +55,14 @@ describe('table name', function() {
 		// trimmed
 		assert.equal(
 			TableName.fromEvent('ns', { group: '  abc ' }).toString(),
-			'rbeta_ns_ddb_abc'
+			'rbeta_ddb_ns_abc'
 		);
 	});
 
 	it('get tracking table name from event', () => {
 		assert.equal(
-			TableName.fromEvent('app', { group: '  abc ' }).trackingName,
-			'rbeta_app_ddb_abc_tracking'
+			TableName.fromEvent('app', { group: '  abc_1 ' }).trackingName,
+			'rbeta_ddb_tracking_app_abc_1'
 		);
 	});
 

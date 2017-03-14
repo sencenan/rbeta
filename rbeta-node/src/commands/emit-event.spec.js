@@ -109,7 +109,10 @@ describe('emit event', function() {
 
 		const
 			ddb = new AWS.DynamoDB(),
-			tableName = 'rbeta_test_ddb_emitTest';
+			tableName = new rbeta.types.TableName({
+				namespace: testCtx.namespace,
+				group: 'emitTest'
+			}).toString();
 
 		ddb.describeTable(
 			{ TableName: tableName },

@@ -22,11 +22,11 @@ module.exports = class TableName extends ST {
 	}
 
 	get trackingName() {
-		return this + '_tracking';
+		return ['rbeta', 'ddb', 'tracking', this.namespace, this.group].join('_');
 	}
 
 	toString() {
-		return ['rbeta', this.namespace, 'ddb', this.group].join('_');
+		return ['rbeta', 'ddb', this.namespace, this.group].join('_');
 	}
 
 };

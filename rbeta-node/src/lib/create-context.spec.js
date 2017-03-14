@@ -60,7 +60,7 @@ describe('creation of execution context', function() {
 	});
 
 	it('get AWS through require', () => {
-		process.env.RBETA_NAMESPACE = 'ns_789';
+		process.env.RBETA_NAMESPACE = 'ns789';
 		assert.equal(
 			createContext(reducer1).AWS, AWS
 		);
@@ -68,7 +68,7 @@ describe('creation of execution context', function() {
 	});
 
 	it('get AWS from reducer', () => {
-		process.env.RBETA_NAMESPACE = 'ns_890';
+		process.env.RBETA_NAMESPACE = 'ns890';
 		assert.equal(
 			createContext(reducer2).AWS, mockAWS
 		);

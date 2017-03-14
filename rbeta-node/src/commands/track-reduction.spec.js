@@ -57,6 +57,11 @@ describe('track event reduction', function() {
 	});
 
 	it('track reduction', function(done) {
+		const tableName = new rbeta.types.TableName({
+			namespace: testCtx.namespace,
+			group: 'trackTest'
+		});
+
 		new TrackReduction({
 			group: 'trackTest',
 			reducerName: 'reducer1',
@@ -66,7 +71,7 @@ describe('track event reduction', function() {
 			.then(() => new Promise(
 				(resolve, reject) => new AWS.DynamoDB.DocumentClient().query(
 					{
-						TableName: 'rbeta_test_ddb_trackTest_tracking',
+						TableName: tableName.trackingName,
 						Select: 'ALL_ATTRIBUTES',
 						KeyConditionExpression: '#a = :a AND #s = :s',
 						ExpressionAttributeNames: {
