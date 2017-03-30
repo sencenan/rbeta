@@ -1,3 +1,14 @@
+TODO:
+- separate the building and package of lambdas (part A) from the libraries (part B) that can be used in the lambdas
+- part A:
+	- Command line tool
+	- build
+	- package
+	- validate
+- part B:
+	- store, fetch, reduce, track events
+	- create event tables
+
 ```
 init reducer
 
